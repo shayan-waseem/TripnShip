@@ -1,0 +1,36 @@
+[ {
+  "id" : "BKG-1001",
+  "userId" : "USR-104",
+  "type" : "TRAVEL_PACKAGE",
+  "referenceId" : "PKG-001",
+  "price" : 1200.0,
+  "status" : "CONFIRMED"
+}, {
+  "id" : "BKG-1002",
+  "userId" : "USR-105",
+  "type" : "TRAVEL_PACKAGE",
+  "referenceId" : "PKG-001",
+  "price" : 1200.0,
+  "status" : "CONFIRMED"
+}, {
+  "id" : "BKG-1003",
+  "userId" : "USR-105",
+  "type" : "TRAVEL_PACKAGE",
+  "referenceId" : "PKG-001",
+  "price" : 1200.0,
+  "status" : "CONFIRMED"
+}, {
+  "id" : "BKG-1004",
+  "userId" : "USR-105",
+  "type" : "TRAVEL_PACKAGE",
+  "referenceId" : "PKG-001",
+  "price" : 1200.0,
+  "status" : "CONFIRMED"
+}, {
+  "id" : "BKG-1005",
+  "userId" : "USR-105",
+  "type" : "TRAVEL_PACKAGE",
+  "referenceId" : "PKG-001",
+  "price" : 1200.0,
+  "status" : "CONFIRMED"
+} ]

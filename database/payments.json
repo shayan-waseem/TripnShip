@@ -1,0 +1,7 @@
+[ {
+  "id" : "PMT-2001",
+  "bookingId" : null,
+  "amount" : 1200.0,
+  "method" : "CARD",
+  "status" : "PAID"
+} ]

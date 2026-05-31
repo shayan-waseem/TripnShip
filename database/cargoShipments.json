@@ -1,0 +1,12 @@
+[ {
+  "id" : "SHP-F9E64",
+  "userId" : "USR-105",
+  "itemType" : "books",
+  "weight" : 250.0,
+  "origin" : "karachi",
+  "destination" : "lahore",
+  "status" : "In Transit",
+  "deliverySpeed" : "Express",
+  "cost" : 2700.0,
+  "insuranceApplied" : true
+} ]

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<nav th:replace="~{fragments/layout :: user-nav('home')}"></nav>
+
+<main class="flex-1 max-w-5xl mx-auto w-full px-6 py-12">
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-4xl font-black tracking-tight">Welcome back<span th:if="${currentUser != null}" th:text="', ' + ${currentUser.username}">!</span></h1>
+        <p class="text-slate-400 text-sm mt-2">Choose what you want to do — everything is one click away.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <a href="/travel" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">✈️</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Book Travel</h2>
+            <p class="text-slate-400 text-xs mt-1">Browse holiday packages and reserve trips.</p>
+        </a>
+        <a href="/cargo" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">📦</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Ship Cargo</h2>
+            <p class="text-slate-400 text-xs mt-1">Register domestic or international shipments.</p>
+        </a>
+        <a href="/travel/history" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">📋</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">My Bookings</h2>
+            <p class="text-slate-400 text-xs mt-1">View your travel booking history.</p>
+        </a>
+        <a href="/tracking" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">🛰️</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Track Shipment</h2>
+            <p class="text-slate-400 text-xs mt-1">Live status for your cargo deliveries.</p>
+        </a>
+        <a href="/payment" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">💳</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Payments</h2>
+            <p class="text-slate-400 text-xs mt-1">Complete or review payment transactions.</p>
+        </a>
+        <a href="/wishlist" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
+            <div class="text-2xl mb-3">❤️</div>
+            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Wishlist</h2>
+            <p class="text-slate-400 text-xs mt-1">Saved packages for later.</p>
+        </a>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

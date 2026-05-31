@@ -1,0 +1,31 @@
+[ {
+  "id" : "USR-001",
+  "username" : "admin",
+  "password" : "password123",
+  "email" : "admin@tripandship.com",
+  "role" : "ADMIN"
+}, {
+  "id" : "USR-002",
+  "username" : "john_doe",
+  "password" : "user123",
+  "email" : "john@gmail.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-003",
+  "username" : "shayan",
+  "password" : "shayan123",
+  "email" : "shayan@tripandship.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-104",
+  "username" : "shayan1",
+  "password" : "shayan123",
+  "email" : "shayan@gmail.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-105",
+  "username" : "noor",
+  "password" : "noor123",
+  "email" : "noor@gmail.com",
+  "role" : "USER"
+} ]

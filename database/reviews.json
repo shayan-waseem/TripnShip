@@ -1,0 +1,9 @@
+[
+  {
+    "id": "REV-001",
+    "userId": "USR-002",
+    "targetId": "PKG-001",
+    "rating": 5,
+    "comment": "Amazing cruise trip! Highly organized."
+  }
+]

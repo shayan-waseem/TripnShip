@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Wishlist')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<nav th:replace="~{fragments/layout :: user-nav('wishlist')}"></nav>
+
+<main class="flex-1 max-w-lg mx-auto w-full px-6 py-16 text-center">
+    <h1 class="text-3xl font-extrabold mb-2">Wishlist</h1>
+    <p class="text-slate-400 text-sm mb-8">Packages you save for later will appear here.</p>
+    <div class="p-8 rounded-2xl border-2 border-dashed border-slate-700 bg-white/5">
+        <p class="text-slate-500 italic text-sm">Your wishlist is empty.</p>
+    </div>
+    <a href="/travel" class="inline-block mt-8 bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl font-bold text-sm transition">Browse travel packages</a>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

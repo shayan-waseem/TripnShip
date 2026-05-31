@@ -1,0 +1,20 @@
+[
+  {
+    "id": "PKG-001",
+    "title": "Maldives Tropical Escape",
+    "description": "7 Days luxury cruise and resort package.",
+    "origin": "New York",
+    "destination": "Maldives",
+    "price": 1200.0,
+    "availableSlots": 15
+  },
+  {
+    "id": "PKG-002",
+    "title": "Swiss Alps Winter Tour",
+    "description": "5 Days Skiing and Scenic Resort Tour.",
+    "origin": "Chicago",
+    "destination": "Swiss Alps",
+    "price": 1500.0,
+    "availableSlots": 8
+  }
+]

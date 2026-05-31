@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Travel Catalog - Trip & Ship')}"></th:block>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 10%, #16192b 0%, #0b0c10 100%);
+            min-height: 100vh;
+        }
+        .premium-glass {
+            background: rgba(255, 255, 255, 0.02) !important;
+            backdrop-filter: blur(25px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+        }
+        .modal-glass {
+            background: rgba(15, 17, 28, 0.75) !important;
+            backdrop-filter: blur(30px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+        .glass-checkbox {
+            appearance: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 0.375rem;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .glass-checkbox:checked {
+            background: #4f46e5;
+            border-color: #6366f1;
+        }
+        .glass-checkbox:checked::before {
+            content: "✓";
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col">
+
+<nav th:replace="~{fragments/layout :: user-nav('travel')}"></nav>
+
+<main class="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
+
+    <div class="premium-glass rounded-3xl p-5 mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest block mb-1.5">Active Travel Parameters</span>
+            <div class="flex flex-wrap items-center gap-3 text-xs md:text-sm font-semibold text-white">
+                <span class="bg-white/5 px-3 py-2 rounded-xl border border-white/5 flex items-center gap-1.5">
+                    📍 From: <span class="text-indigo-300" th:text="${selectedFrom}">Any Origin</span>
+                </span>
+                <span class="text-slate-500 font-bold">➔</span>
+                <span class="bg-white/5 px-3 py-2 rounded-xl border border-white/5 flex items-center gap-1.5">
+                    🏁 To: <span class="text-indigo-300" th:text="${selectedTo}">Any Destination</span>
+                </span>
+                <span class="bg-white/5 px-3 py-2 rounded-xl border border-white/5 flex items-center gap-1.5">
+                    👥 Passengers: <span class="text-indigo-300" th:text="${selectedQty}">1</span>
+                </span>
+            </div>
+        </div>
+        <a href="/" class="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+            📄 Edit Search Criteria
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        
+        <aside class="premium-glass rounded-3xl p-6 space-y-6 lg:sticky lg:top-6">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">📊 Search Filters</h3>
+                <button type="button" onclick="resetFilters()" class="text-xs text-indigo-400 hover:text-indigo-300 transition font-medium">Clear All</button>
+            </div>
+
+            <form id="filterForm" onsubmit="return false;" class="space-y-6">
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Price Range</label>
+                    <input type="range" id="priceRange" min="0" max="5000" value="5000" oninput="updatePriceLabel(this.value); filterPackages();" class="w-full accent-indigo-500 h-1.5 bg-white/10 rounded-lg cursor-pointer">
+                    <div class="flex justify-between text-xs font-mono text-slate-400">
+                        <span>$0</span>
+                        <span id="priceLabel" class="text-indigo-400 font-bold">$5,000</span>
+                    </div>
+                </div>
+
+                <hr class="border-white/5">
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Airlines</label>
+                    <div class="space-y-2.5">
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="airline" value="SkyWings Airlines" onchange="filterPackages()" class="glass-checkbox"> SkyWings Airlines
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="airline" value="Ocean Air" onchange="filterPackages()" class="glass-checkbox"> Ocean Air
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="airline" value="Prime Airways" onchange="filterPackages()" class="glass-checkbox"> Prime Airways
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="airline" value="Continental Express" onchange="filterPackages()" class="glass-checkbox"> Continental Express
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="border-white/5">
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Transit Vector Stops</label>
+                    <div class="space-y-2.5">
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="stops" value="Non-stop" onchange="filterPackages()" class="glass-checkbox"> Non-stop
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="stops" value="1 Stop" onchange="filterPackages()" class="glass-checkbox"> 1 Stop
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="stops" value="2+ Stops" onchange="filterPackages()" class="glass-checkbox"> 2+ Stops
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="border-white/5">
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Cabin Configuration</label>
+                    <div class="space-y-2.5">
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="class" value="Economy Class" onchange="filterPackages()" class="glass-checkbox"> Economy Class
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="class" value="Business Class" onchange="filterPackages()" class="glass-checkbox"> Business Class
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-300 hover:text-white cursor-pointer transition">
+                            <input type="checkbox" name="class" value="First Class" onchange="filterPackages()" class="glass-checkbox"> First Class Registry
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </aside>
+
+        <div class="lg:col-span-3 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                    <h1 class="text-3xl font-extrabold tracking-tight">Available Travel Registries</h1>
+                    <p class="text-slate-400 text-sm mt-1">Select your preferred catalog vector routing. Payment verification runs instant checks.</p>
+                </div>
+                <span class="w-fit text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Real-time Booking Engine Active
+                </span>
+            </div>
+
+            <div id="emptyState" th:class="${packages.empty} ? 'premium-glass rounded-3xl p-12 text-center border border-dashed border-white/10' : 'hidden premium-glass rounded-3xl p-12 text-center border border-dashed border-white/10'">
+                <p class="text-slate-400 text-base font-semibold">⚠️ No schedules matching your searched configuration</p>
+            </div>
+
+            <div id="packagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div th:each="package : ${packages}" 
+                     class="package-card premium-glass rounded-3xl p-6 flex flex-col justify-between shadow-xl border border-white/5"
+                     th:data-id="${package.id}"
+                     th:data-title="${package.title}"
+                     th:data-price="${package.price}" 
+                     th:data-airline="${package.airlineName}" 
+                     th:data-stops="${package.transitStops}" 
+                     th:data-class="${package.cabinClass}">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-white" th:text="${package.title}">Package Title</h3>
+                                <p class="text-xs text-indigo-400 font-mono mt-1">
+                                    📍 <span th:text="${package.origin}">Origin</span> ➔ 🏁 <span th:text="${package.destination}">Destination</span>
+                                </p>
+                            </div>
+                            <span class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-slate-400 font-mono" 
+                                  th:text="${package.id != null ? 'PKG-' + package.id : 'PKG-000'}">PKG-001</span>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed font-light" th:text="${package.description}">Description</p>
+                        
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                            <span class="text-xs text-amber-300 font-semibold">Slots remaining: <span th:text="${package.availableSlots}">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+                        <div>
+                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Total Fare Price</span>
+                            <span class="text-2xl font-black text-emerald-400" th:text="'$' + ${package.price}">$0.0</span>
+                        </div>
+                        
+                        <button type="button" 
+                                th:data-id="${package.id}"
+                                th:data-title="${package.title}"
+                                th:data-price="${package.price}"
+                                onclick="initiateBookingGateway(this)"
+                                class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-3 rounded-xl transition whitespace-nowrap shadow-lg shadow-indigo-600/20">
+                            Book Passage
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="paymentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300">
+    <div class="modal-glass rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+        
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+            <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
+                🔒 Secure Gateway
+            </h3>
+            <button type="button" onclick="closeBookingGateway()" class="text-slate-400 hover:text-white transition text-sm">✕</button>
+        </div>
+
+        <form th:action="@{/travel/book}" method="POST" class="space-y-5">
+            <input type="hidden" id="modalPackageId" name="packageId">
+            
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-4">
+                <span class="text-[10px] text-indigo-400 uppercase font-bold tracking-widest block mb-1">Selected Package</span>
+                <div id="modalPackageTitle" class="text-base font-bold text-white mb-2">Package Name</div>
+                
+                <div class="flex justify-between items-center border-t border-white/5 pt-2 mt-2">
+                    <span class="text-xs text-slate-400">Transaction Value:</span>
+                    <span id="modalPackagePrice" class="text-xl font-black text-emerald-400">$0.0</span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Select Payment Architecture</label>
+                <select name="paymentMethod" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-3 text-slate-200 focus:outline-none cursor-pointer focus:border-indigo-500 transition">
+                    <option value="Credit/Debit Card">💳 Credit/Debit Card (Visa/Mastercard)</option>
+                    <option value="Digital Wallet">🌐 Digital Wallet Services</option>
+                    <option value="Crypto Vector">🪙 Decentralized Crypto Vector</option>
+                </select>
+            </div>
+
+            <p class="text-[11px] text-slate-500 leading-normal">
+                By confirming this gateway route, you initiate live routing confirmation on our booking core nodes.
+            </p>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button type="button" onclick="closeBookingGateway()" class="bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs py-3 rounded-xl transition border border-white/5">
+                    Cancel Routing
+                </button>
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-emerald-600/20">
+                    Confirm & Pay
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    // Payment Architecture Gateway Control Logic - Fixed to extract data cleanly from button element
+    void function initModalControl() {
+        window.initiateBookingGateway = function(buttonElement) {
+            const id = buttonElement.getAttribute('data-id');
+            const title = buttonElement.getAttribute('data-title');
+            const price = buttonElement.getAttribute('data-price');
+
+            document.getElementById('modalPackageId').value = id;
+            document.getElementById('modalPackageTitle').innerText = title;
+            document.getElementById('modalPackagePrice').innerText = '$' + parseFloat(price).toFixed(1);
+            
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('hidden');
+        };
+
+        window.closeBookingGateway = function() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.add('hidden');
+        };
+    }();
+
+    function updatePriceLabel(val) {
+        document.getElementById('priceLabel').innerText = '$' + parseInt(val).toLocaleString();
+    }
+
+    function filterPackages() {
+        const maxPrice = parseFloat(document.getElementById('priceRange').value);
+        const selectedAirlines = Array.from(document.querySelectorAll('input[name="airline"]:checked')).map(el => el.value);
+        const selectedStops = Array.from(document.querySelectorAll('input[name="stops"]:checked')).map(el => el.value);
+        const selectedClasses = Array.from(document.querySelectorAll('input[name="class"]:checked')).map(el => el.value);
+
+        const cards = document.querySelectorAll('.package-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardPrice = parseFloat(card.getAttribute('data-price')) || 0;
+            const cardAirline = card.getAttribute('data-airline');
+            const cardStops = card.getAttribute('data-stops');
+            const cardClass = card.getAttribute('data-class');
+
+            const matchesPrice = cardPrice <= maxPrice;
+            const matchesAirline = selectedAirlines.length === 0 || selectedAirlines.includes(cardAirline);
+            const matchesStops = selectedStops.length === 0 || selectedStops.includes(cardStops);
+            const matchesClass = selectedClasses.length === 0 || selectedClasses.includes(cardClass);
+
+            if (matchesPrice && matchesAirline && matchesStops && matchesClass) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const emptyState = document.getElementById('emptyState');
+        if (visibleCount === 0) emptyState.classList.remove('hidden');
+        else emptyState.classList.add('hidden');
+    }
+
+    function resetFilters() {
+        document.getElementById('filterForm').reset();
+        document.getElementById('priceRange').value = 5000;
+        updatePriceLabel(5000);
+        filterPackages();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { 
+        const totalCards = document.querySelectorAll('.package-card').length;
+        if(totalCards > 0) {
+            filterPackages(); 
+        }
+    });
+</script>
+</body>
+</html>

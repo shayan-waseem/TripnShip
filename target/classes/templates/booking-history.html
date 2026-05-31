@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Bookings')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<nav th:replace="~{fragments/layout :: user-nav('bookings')}"></nav>
+
+<main class="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-extrabold">My Bookings</h1>
+            <p class="text-slate-400 text-sm mt-1">Your travel reservations and payment status.</p>
+        </div>
+        <a href="/travel" class="text-sm text-indigo-400 hover:underline">+ Book another trip</a>
+    </div>
+
+    <div th:if="${param.success}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
+        Booking confirmed successfully!
+    </div>
+    <div th:if="${param.paymentSuccess}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
+        Payment recorded successfully!
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-white/10 bg-white/5">
+        <table class="w-full text-left text-sm">
+            <thead class="text-slate-400 text-xs uppercase border-b border-white/10">
+            <tr>
+                <th class="p-4">Booking ID</th>
+                <th class="p-4">Type</th>
+                <th class="p-4">Package</th>
+                <th class="p-4">Amount</th>
+                <th class="p-4 text-right">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${bookings}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="p-4 font-mono text-indigo-400" th:text="${b.id}">BKG</td>
+                <td class="p-4" th:text="${b.type}">TYPE</td>
+                <td class="p-4 font-mono text-slate-400" th:text="${b.referenceId}">REF</td>
+                <td class="p-4 text-emerald-400 font-bold" th:text="${'$' + #numbers.formatDecimal(b.price, 1, 2)}">$0</td>
+                <td class="p-4 text-right">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold"
+                          th:classappend="${b.status == 'CONFIRMED'} ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'"
+                          th:text="${b.status}">STATUS</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(bookings)}">
+                <td colspan="5" class="p-10 text-center text-slate-500 italic">No bookings yet. <a href="/travel" class="text-indigo-400 underline">Browse packages</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

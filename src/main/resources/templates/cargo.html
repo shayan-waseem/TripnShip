@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cargo Shipping')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<nav th:replace="~{fragments/layout :: user-nav('cargo')}"></nav>
+
+<main class="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold">Ship Cargo</h1>
+        <p class="text-slate-400 text-sm mt-1">Register a shipment — you will be redirected to tracking when done.</p>
+    </div>
+
+    <div th:if="${param.success}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
+        Shipment registered! <a href="/tracking" class="underline font-semibold">Track it here</a>.
+    </div>
+
+    <form th:action="@{/cargo/process}" th:object="${shipment}" method="POST"
+          class="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-5 shadow-xl mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Item type</label>
+                <input type="text" th:field="*{itemType}" required placeholder="Electronics, furniture…"
+                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Weight (kg)</label>
+                <input type="number" step="0.1" th:field="*{weight}" required
+                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Origin</label>
+                <input type="text" th:field="*{origin}" required
+                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Destination</label>
+                <input type="text" th:field="*{destination}" required
+                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+        </div>
+        <div class="p-4 bg-indigo-950/30 rounded-xl border border-indigo-500/20 space-y-3">
+            <div class="flex flex-wrap justify-between items-center gap-3">
+                <span class="text-sm">Delivery speed</span>
+                <select th:field="*{deliverySpeed}" class="bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
+                    <option value="Standard">Standard</option>
+                    <option value="Express">Express (+fee)</option>
+                </select>
+            </div>
+            <label class="flex items-center gap-3 text-sm cursor-pointer">
+                <input type="checkbox" th:field="*{insuranceApplied}" class="w-4 h-4 accent-indigo-500">
+                Add cargo insurance
+            </label>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition">Register shipment</button>
+    </form>
+
+    <h2 class="text-lg font-bold mb-4 text-indigo-300">Your shipments</h2>
+    <div class="overflow-x-auto rounded-2xl border border-white/10">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase">
+            <tr>
+                <th class="p-4">ID</th>
+                <th class="p-4">Route</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Cost</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ship : ${myShipments}" class="border-t border-white/5 hover:bg-white/5">
+                <td class="p-4 font-mono text-indigo-400" th:text="${ship.id}">SHP</td>
+                <td class="p-4" th:text="${ship.origin + ' → ' + ship.destination}">Route</td>
+                <td class="p-4"><span class="px-2 py-1 rounded text-xs bg-amber-500/20 text-amber-300" th:text="${ship.status}">Status</span></td>
+                <td class="p-4 text-right font-bold text-emerald-400" th:text="${'$' + #numbers.formatDecimal(ship.cost, 1, 2)}">$0</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(myShipments)}">
+                <td colspan="4" class="p-8 text-center text-slate-500 italic">No shipments yet. Submit the form above.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

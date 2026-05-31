@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Track Shipment')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<nav th:replace="~{fragments/layout :: user-nav('tracking')}"></nav>
+
+<main class="flex-1 max-w-3xl mx-auto w-full px-6 py-10">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold">Shipment Tracking</h1>
+        <p class="text-slate-400 text-sm mt-1">Real-time status for your cargo.</p>
+    </div>
+
+    <div th:if="${param.success}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
+        New shipment registered and is now in transit.
+    </div>
+
+    <div th:if="${tracked != null}" class="mb-8 p-6 bg-indigo-600/10 border border-indigo-500/30 rounded-2xl">
+        <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Latest shipment</p>
+        <p class="font-mono text-indigo-300 text-lg mb-2" th:text="${tracked.id}">SHP-ID</p>
+        <p class="text-sm mb-1" th:text="${tracked.itemType + ' · ' + tracked.origin + ' → ' + tracked.destination}">Details</p>
+        <p class="text-2xl font-bold text-amber-300 mt-3" th:text="${tracked.status}">In Transit</p>
+        <p class="text-emerald-400 font-bold mt-2" th:text="${'$' + #numbers.formatDecimal(tracked.cost, 1, 2)}">$0</p>
+    </div>
+
+    <form method="get" action="/tracking" class="mb-8 flex gap-2">
+        <input type="text" name="id" placeholder="Enter shipment ID (e.g. SHP-ABC12)"
+               class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-bold text-sm transition">Lookup</button>
+    </form>
+
+    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">All your shipments</h2>
+    <div class="space-y-3">
+        <a th:each="s : ${shipments}" th:href="@{/tracking(id=${s.id})}"
+           class="block p-4 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-500/40 transition">
+            <div class="flex justify-between items-center">
+                <span class="font-mono text-indigo-400" th:text="${s.id}">ID</span>
+                <span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-300" th:text="${s.status}">Status</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-1" th:text="${s.origin + ' → ' + s.destination}">Route</p>
+        </a>
+        <p th:if="${#lists.isEmpty(shipments)}" class="text-slate-500 text-sm italic py-6 text-center">
+            No shipments to track. <a href="/cargo" class="text-indigo-400 underline">Ship cargo</a> first.
+        </p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
