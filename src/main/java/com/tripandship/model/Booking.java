@@ -19,6 +19,7 @@ public class Booking {
     private String packageTitle;
     private String origin;
     private String destination;
+    private String username;
     
     // 🆕 New ticket metadata fields
     private String passengerName;
@@ -75,6 +76,9 @@ public class Booking {
 
     public String getDestination() { return destination; }
     public void setDestination(String destination) { this.destination = destination; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
     // 🆕 Getters and Setters for the new ticket metadata fields
     public String getPassengerName() { return passengerName; }

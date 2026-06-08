@@ -78,6 +78,7 @@ public class TravelController {
     public String confirmTravelBooking(@RequestParam("packageId") String packageId,
                                        @RequestParam("passengerQty") Integer passengerQty,
                                        @RequestParam("phoneNumber") String phoneNumber,
+                                       @RequestParam("username") String username,
                                        @RequestParam("cardNumber") String cardNumber,
                                        @RequestParam("cvv") String cvv,
                                        @RequestParam("paymentMethod") String paymentMethod,
@@ -87,7 +88,7 @@ public class TravelController {
             System.out.println("💳 [Booking Process] Initiating booking for User: " + userId + " | Package: " + packageId);
 
             Booking finalizedBooking = bookingService.processTravelBooking(
-                userId, packageId, passengerQty, phoneNumber, cardNumber, cvv, paymentMethod
+                userId, packageId, passengerQty, phoneNumber, cardNumber, cvv, paymentMethod, username
             );
             
             if (finalizedBooking != null && "CONFIRMED".equals(finalizedBooking.getStatus())) {

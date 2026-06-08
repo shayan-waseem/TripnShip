@@ -20,6 +20,10 @@ import com.tripandship.repository.CargoRepository;
 import com.tripandship.repository.TravelRepository;
 import com.tripandship.repository.UserRepository;
 import com.tripandship.service.AnalyticsService;
+import com.tripandship.service.CargoService;
+import com.tripandship.patterns.command.AddPackageCommand;
+import com.tripandship.patterns.command.DeletePackageCommand;
+import com.tripandship.patterns.command.UpdateCargoStatusCommand;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,64 +34,75 @@ public class AdminController {
     private final BookingRepository bookingRepository;
     private final CargoRepository cargoRepository;
     private final TravelRepository travelRepository;
+    private final CargoService cargoService;
 
     public AdminController(AnalyticsService analyticsService,
-                           UserRepository userRepository,
-                           BookingRepository bookingRepository,
-                           CargoRepository cargoRepository,
-                           TravelRepository travelRepository) {
+            UserRepository userRepository,
+            BookingRepository bookingRepository,
+            CargoRepository cargoRepository,
+            TravelRepository travelRepository,
+            CargoService cargoService) {
         this.analyticsService = analyticsService;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.cargoRepository = cargoRepository;
         this.travelRepository = travelRepository;
+        this.cargoService = cargoService;
     }
 
     @GetMapping("/dashboard")
     public String showAdminDashboard(Model model) {
         addMetrics(model);
         model.addAttribute("allUsers", userRepository.findAll());
-        model.addAttribute("allGlobalBookings", bookingRepository.findAll()); 
+        model.addAttribute("allGlobalBookings", bookingRepository.findAll());
         model.addAttribute("allShipments", cargoRepository.findAll());
-        model.addAttribute("packages", travelRepository.findAll()); 
+        model.addAttribute("packages", travelRepository.findAll());
         return "admin/dashboard";
     }
 
-    /* =========================================================================
-       CRUD METRIC PERSISTENCE MANAGEMENT 
-       ========================================================================= */
+    /*
+     * =========================================================================
+     * CRUD METRIC PERSISTENCE MANAGEMENT
+     * =========================================================================
+     */
 
     @PostMapping("/packages/save")
     public String executePackagePayloadCommit(@ModelAttribute("package") TravelPackage travelPackage) {
-        travelRepository.save(travelPackage); // Clean execution on custom save block
+        // Use command pattern to perform admin package add/update
+        AddPackageCommand cmd = new AddPackageCommand(travelRepository, travelPackage);
+        cmd.execute();
         return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/packages/delete/{id}")
     public String purgePackageConfigurationNode(@PathVariable("id") String id) {
-        travelRepository.deleteById(id); // Clean execution on custom delete block
+        DeletePackageCommand cmd = new DeletePackageCommand(travelRepository, id);
+        cmd.execute();
         return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/bookings/verify/{id}")
-    public String verifyPassengerManifestEntity(@PathVariable("id") String id, @RequestParam("action") String operationalAction) {
+    public String verifyPassengerManifestEntity(@PathVariable("id") String id,
+            @RequestParam("action") String operationalAction) {
         // ID Type Changed from Long to String to map seamlessly to your JSON records
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Booking ID: " + id));
-        
+
         if ("CONFIRM".equalsIgnoreCase(operationalAction)) {
             booking.setStatus("CONFIRMED");
         } else {
             booking.setStatus("CANCELLED");
         }
-        
+
         bookingRepository.save(booking); // Clean execution on JSON pipeline save
         return "redirect:/admin/dashboard";
     }
 
-    /* =========================================================================
-       ISOLATED STANDALONE PAGES
-       ========================================================================= */
+    /*
+     * =========================================================================
+     * ISOLATED STANDALONE PAGES
+     * =========================================================================
+     */
     @GetMapping("/users")
     public String manageUsers(Model model) {
         model.addAttribute("allUsers", userRepository.findAll());
@@ -120,5 +135,12 @@ public class AdminController {
         model.addAttribute("totalBookingsCount", totalBk);
         model.addAttribute("shipmentsCount", totalShip);
         model.addAttribute("activeCargoCount", totalShip);
+    }
+
+    @PostMapping("/cargo/advance")
+    public String advanceCargoStatus(@RequestParam String shipmentId) {
+        UpdateCargoStatusCommand cmd = new UpdateCargoStatusCommand(cargoService, shipmentId);
+        cmd.execute();
+        return "redirect:/admin/dashboard";
     }
 }

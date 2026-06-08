@@ -55,25 +55,38 @@ public class CargoController {
     public String processShipment(@ModelAttribute("shipment") CargoShipment shipment, 
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) { // Added RedirectAttributes
-        
-        // 1. Calculate business logic
-        double baseRate = 10.0;
-        double total = shipment.getWeight() * baseRate;
-        if ("Express".equalsIgnoreCase(shipment.getDeliverySpeed())) {
-            total += 150.0;
-        }
-        
-        shipment.setCost(total);
-        shipment.setStatus("CONFIRMED");
-        shipment.setUserId(sessionService.requireUserId(session));
+        // 1. Simulate payment validation
+        String paymentMethod = shipment.getPaymentMethod();
+        boolean paymentSuccess = false;
 
-        // 2. Persist
+        if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please select a payment method.");
+            return "redirect:/cargo";
+        }
+
+        if (paymentMethod.toLowerCase().contains("card")) {
+            String card = shipment.getCardNumber();
+            String cvv = shipment.getCvv();
+            String expiry = shipment.getExpiryDate();
+            if (card != null && card.replaceAll("\\s+", "").length() >= 12 && cvv != null && (cvv.length() == 3 || cvv.length() == 4)) {
+                paymentSuccess = true; // UI-only validation passed
+            }
+        } else {
+            // For non-card methods accept if a method was chosen (simulated)
+            paymentSuccess = true;
+        }
+
+        if (!paymentSuccess) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Payment validation failed. Check card details.");
+            return "redirect:/cargo";
+        }
+
+        // 2. Attach user and persist via service which computes cost and sets ID
+        shipment.setUserId(sessionService.requireUserId(session));
+        shipment.setStatus("CONFIRMED");
         cargoService.registerShipment(shipment);
-        
-        // 3. Use FlashAttributes for temporary, single-use success message
+
         redirectAttributes.addFlashAttribute("successMessage", "Manifest Registered Successfully!");
-        
-        // Clean URL redirect
         return "redirect:/cargo";
     }
 }

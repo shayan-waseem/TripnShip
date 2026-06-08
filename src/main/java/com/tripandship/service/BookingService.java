@@ -33,7 +33,8 @@ public class BookingService {
     }
 
     public Booking processTravelBooking(String userId, String packageId, Integer passengerQty, 
-                                        String phoneNumber, String cardNumber, String cvv, String paymentMethod) {
+                                        String phoneNumber, String cardNumber, String cvv, String paymentMethod,
+                                        String username) {
         
         // 1. Retrieve the target package
         TravelPackage travelPackage = travelRepository.findById(packageId)
@@ -68,6 +69,7 @@ public class BookingService {
             booking.setPhoneNumber(phoneNumber);
             booking.setPaymentMethod(paymentMethod);
             booking.setPackageTitle(travelPackage.getTitle());
+            booking.setUsername(username);
         } catch (Exception e) {
             System.err.println("⚠️ [BookingService] Failed to set extra booking fields: " + e.getMessage());
         }

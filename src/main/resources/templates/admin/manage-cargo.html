@@ -1,34 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Cargo Management')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex">
-<aside th:replace="~{fragments/layout :: admin-sidebar('cargo')}"></aside>
+  <head th:replace="~{fragments/layout :: head('Cargo Management')}"></head>
+  <body class="text-slate-100 min-h-screen font-sans flex">
+    <aside th:replace="~{fragments/layout :: admin-sidebar('cargo')}"></aside>
 
-<main class="flex-1 p-8 md:p-10">
-    <h1 class="text-2xl font-black mb-6">Cargo shipments</h1>
-    <div class="overflow-x-auto rounded-2xl border border-slate-800">
+    <main class="flex-1 p-8 md:p-10">
+      <h1 class="text-2xl font-black mb-6">Cargo shipments</h1>
+      <div class="overflow-x-auto rounded-2xl border border-slate-800">
         <table class="w-full text-left text-sm">
-            <thead class="text-slate-400 text-xs uppercase border-b border-slate-800 bg-slate-900/50">
+          <thead
+            class="text-slate-400 text-xs uppercase border-b border-slate-800 bg-slate-900/50"
+          >
             <tr>
-                <th class="p-4">ID</th><th class="p-4">User</th><th class="p-4">Item</th>
-                <th class="p-4">Route</th><th class="p-4">Status</th><th class="p-4 text-right">Cost</th>
+              <th class="p-4">ID</th>
+              <th class="p-4">User</th>
+              <th class="p-4">Item</th>
+              <th class="p-4">Route</th>
+              <th class="p-4">Status</th>
+              <th class="p-4 text-right">Cost</th>
+              <th class="p-4 text-center">Actions</th>
             </tr>
-            </thead>
-            <tbody>
-            <tr th:each="s : ${allShipments}" class="border-t border-slate-800 hover:bg-slate-900/30">
-                <td class="p-4 font-mono text-indigo-400" th:text="${s.id}">SHP</td>
-                <td class="p-4 font-mono text-xs" th:text="${s.userId}">USR</td>
-                <td class="p-4" th:text="${s.itemType}">item</td>
-                <td class="p-4 text-slate-400" th:text="${s.origin + ' → ' + s.destination}">route</td>
-                <td class="p-4"><span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-300" th:text="${s.status}">status</span></td>
-                <td class="p-4 text-right font-bold text-emerald-400" th:text="${'$' + #numbers.formatDecimal(s.cost, 1, 2)}">$0</td>
+          </thead>
+          <tbody>
+            <tr
+              th:each="s : ${allShipments}"
+              class="border-t border-slate-800 hover:bg-slate-900/30"
+            >
+              <td class="p-4 font-mono text-indigo-400" th:text="${s.id}">
+                SHP
+              </td>
+              <td class="p-4 font-mono text-xs" th:text="${s.userId}">USR</td>
+              <td class="p-4" th:text="${s.itemType}">item</td>
+              <td
+                class="p-4 text-slate-400"
+                th:text="${s.origin + ' → ' + s.destination}"
+              >
+                route
+              </td>
+              <td class="p-4">
+                <span
+                  class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-300"
+                  th:text="${s.status}"
+                  >status</span
+                >
+              </td>
+              <td
+                class="p-4 text-right font-bold text-emerald-400"
+                th:text="${'$' + #numbers.formatDecimal(s.cost, 1, 2)}"
+              >
+                $0
+              </td>
+              <td class="p-4 text-center">
+                <form th:action="@{/admin/cargo/advance}" method="post">
+                  <input type="hidden" name="shipmentId" th:value="${s.id}" />
+
+                  <button
+                    type="submit"
+                    class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
+                    th:disabled="${s.status == 'Delivered'}"
+                  >
+                    Advance Status
+                  </button>
+                </form>
+              </td>
             </tr>
             <tr th:if="${#lists.isEmpty(allShipments)}">
-                <td colspan="6" class="p-8 text-center text-slate-500 italic">No shipments registered.</td>
+              <td colspan="7" class="p-8 text-center text-slate-500 italic">
+                No shipments registered.
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
-    </div>
-</main>
-</body>
+      </div>
+    </main>
+  </body>
 </html>

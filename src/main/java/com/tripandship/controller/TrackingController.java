@@ -27,9 +27,10 @@ public class TrackingController {
 
     @GetMapping("/tracking")
     public String trackShipments(@RequestParam(required = false) String id,
-                                 HttpSession session,
-                                 Model model) {
+            HttpSession session,
+            Model model) {
         String userId = sessionService.requireUserId(session);
+        System.out.println("Logged in user = " + userId);
         List<CargoShipment> mine = cargoService.getAllShipments().stream()
                 .filter(s -> userId.equals(s.getUserId()))
                 .collect(Collectors.toList());

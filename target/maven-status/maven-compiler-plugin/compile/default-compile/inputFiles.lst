@@ -1,65 +1,79 @@
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\AppConfig.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\AuthInterceptor.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\GlobalModelAdvice.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\SecurityConfig.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\SessionKeys.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\config\WebMvcConfig.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\AdminController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\AnalyticsController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\AuthController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\BookingController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\CargoController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\HomeController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\RecommendationController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\ReviewController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\TrackingController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\TravelController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\controller\WishlistController.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\exception\PaymentFailedException.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\exception\ResourceNotFoundException.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\Booking.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\CargoShipment.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\Payment.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\Review.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\TravelPackage.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\User.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\model\Wishlist.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\adapter\ExternalPaymentAPI.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\adapter\PaymentGatewayAdapter.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\ExpressDelivery.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\InsuranceDecorator.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\ShipmentDecorator.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\facade\BookingFacade.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\factory\BookingFactory.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\factory\CargoBooking.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\factory\TravelBooking.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\observer\AdminPanel.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\observer\Observer.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\observer\Subject.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\observer\UserPortal.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\singleton\DatabaseManager.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\BankTransferPayment.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\CashOnDelivery.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\CreditCardPayment.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\PaymentStrategy.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\BookingRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\CargoRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\PaymentRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\ReviewRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\TravelRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\repository\UserRepository.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\AnalyticsService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\AuthService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\BookingService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\CargoService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\NotificationService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\PaymentService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\RecommendationService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\SessionService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\TrackingService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\service\TravelService.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\TripAndShipApplication.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\utils\Constants.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\utils\CostCalculator.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\utils\JsonUtil.java
-D:\Important Documents\SEMESTER # 4\TripnShip-main\src\main\java\com\tripandship\utils\Validators.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\AppConfig.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\AuthInterceptor.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\GlobalModelAdvice.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\SecurityConfig.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\SessionKeys.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\config\WebMvcConfig.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\AdminController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\AnalyticsController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\AuthController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\BookingController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\CargoController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\HomeController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\RecommendationController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\ReviewController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\TrackingController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\TravelController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\controller\WishlistController.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\exception\PaymentFailedException.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\exception\ResourceNotFoundException.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\Booking.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\CargoShipment.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\Payment.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\Review.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\TravelPackage.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\User.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\model\Wishlist.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\adapter\ExternalPaymentAPI.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\adapter\PaymentGatewayAdapter.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\command\AddPackageCommand.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\command\AdminCommand.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\command\DeletePackageCommand.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\command\UpdateCargoStatusCommand.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\ExpressDelivery.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\InsuranceDecorator.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\decorator\ShipmentDecorator.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\facade\BookingFacade.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\factory\BookingFactory.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\factory\CargoBooking.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\factory\TravelBooking.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\observer\AdminPanel.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\observer\Observer.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\observer\Subject.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\observer\UserPortal.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\singleton\DatabaseManager.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\CargoState.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\CargoStateFactory.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\ConfirmedState.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\DeliveredState.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\InTransitState.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\state\PendingState.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\AirFreightStrategy.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\BankTransferPayment.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\CashOnDelivery.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\CreditCardPayment.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\ExpressOverlandStrategy.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\OceanCargoStrategy.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\PaymentStrategy.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\patterns\strategy\ShippingStrategy.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\BookingRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\CargoRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\PaymentRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\ReviewRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\TravelRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\repository\UserRepository.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\AnalyticsService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\AuthService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\BookingService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\CargoService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\NotificationService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\PaymentService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\RecommendationService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\SessionService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\TrackingService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\service\TravelService.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\TripAndShipApplication.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\utils\Constants.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\utils\CostCalculator.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\utils\JsonUtil.java
+F:\Software\TripnShip-main\src\main\java\com\tripandship\utils\Validators.java
