@@ -28,4 +28,28 @@
   "password" : "noor123",
   "email" : "noor@gmail.com",
   "role" : "USER"
+}, {
+  "id" : "USR-106",
+  "username" : "affan",
+  "password" : "123456",
+  "email" : "affan@gmail.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-107",
+  "username" : "huda",
+  "password" : "huda123",
+  "email" : "huda@gmail.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-108",
+  "username" : "Admin1",
+  "password" : "admin1",
+  "email" : "admin1@gmail.com",
+  "role" : "USER"
+}, {
+  "id" : "USR-109",
+  "username" : "Admin2",
+  "password" : "123456",
+  "email" : "admin2@gmail.com",
+  "role" : "USER"
 } ]

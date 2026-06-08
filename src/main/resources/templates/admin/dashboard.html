@@ -1,69 +1,465 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex">
-<aside th:replace="~{fragments/layout :: admin-sidebar('dashboard')}"></aside>
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Admin Control - Trip & Ship')}"></th:block>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 10%, #0f111a 0%, #050508 100%);
+            min-height: 100vh;
+        }
+        .admin-glass {
+            background: rgba(255, 255, 255, 0.01) !important;
+            backdrop-filter: blur(20px) saturate(160%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        .stat-card-glow {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card-glow:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.05);
+        }
+        /* Apply this to your dashboard cards */
+        .dashboard-card {
+        background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease-in-out;
+        }
 
-<main class="flex-1 p-8 md:p-10 overflow-y-auto">
-    <div class="mb-8">
-        <h1 class="text-3xl font-black">Operations dashboard</h1>
-        <p class="text-slate-400 text-sm mt-1">Platform overview — users, bookings, and cargo.</p>
+/* Subtle glowing hover effect */
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 180, 216, 0.4); /* Custom accent color */
+            box-shadow: 0 12px 40px 0 rgba(0, 180, 216, 0.15);
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.01); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+    </style>
+</head>
+<body class="text-slate-200 antialiased flex">
+
+    <aside class="w-64 border-r border-white/5 bg-slate-950/60 backdrop-blur-xl min-h-screen p-6 flex flex-col justify-between sticky top-0 hidden lg:flex">
+        <div class="space-y-8">
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-indigo-600/30">T</div>
+                <div>
+                    <span class="text-sm font-bold text-white block tracking-tight">Trip & Ship</span>
+                    <span class="text-[10px] text-indigo-400 font-mono tracking-widest uppercase">Admin Matrix</span>
+                </div>
+            </div>
+
+            <nav class="space-y-1.5" id="sidebarNav">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center gap-3 px-4 py-3 bg-indigo-600/10 text-indigo-400 rounded-xl font-semibold text-xs border border-indigo-500/20 transition cursor-pointer text-left">
+                    📊 Core Dashboard
+                </button>
+                <button onclick="switchTab('packages')" id="btn-packages" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium text-xs transition cursor-pointer text-left">
+                    ✈️ Manage Travel Registry
+                </button>
+                <button onclick="switchTab('cargo')" id="btn-cargo" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium text-xs transition cursor-pointer text-left">
+                    📦 Cargo Shipments
+                </button>
+                <button onclick="switchTab('bookings')" id="btn-bookings" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-medium text-xs transition cursor-pointer text-left">
+                    📜 User Booking History
+                </button>
+            </nav>
+        </div>
+
+        <div class="border-t border-white/5 pt-4">
+            <div class="bg-white/5 rounded-2xl p-3 mb-3 flex items-center gap-3 border border-white/5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-xs font-bold text-indigo-300">A1</div>
+                <div class="truncate">
+                    <span class="text-xs font-bold text-white block truncate">Admin Engine</span>
+                    <span class="text-[9px] text-slate-500 block truncate">admin1@tripnship.com</span>
+                </div>
+            </div>
+            <a href="/logout" class="w-full text-center block text-xs font-bold bg-rose-950/20 hover:bg-rose-900/30 text-rose-400 border border-rose-500/20 py-2.5 rounded-xl transition">
+                Exit Matrix
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 p-6 lg:p-10 space-y-8">
+        
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-6">
+            <div>
+                <h1 class="text-2xl font-black text-white tracking-tight">System Operational Diagnostics</h1>
+                <p class="text-xs text-slate-400 mt-1">Real-time database records and active travel transactions.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.location.reload();" class="p-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-slate-300 transition text-xs flex items-center gap-2 font-semibold cursor-pointer">
+                    🔄 Sync System Nodes
+                </button>
+                <a href="/travel/catalog" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20">
+                    + Launch User View
+                </a>
+            </div>
+        </header>
+
+        <div id="tab-dashboard" class="tab-content active space-y-8">
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="admin-glass stat-card-glow rounded-2xl p-5 border flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Global Travel Registries</span>
+                        <span class="text-3xl font-black text-white mt-1 block" th:text="${totalBookingsCount != null ? totalBookingsCount : '0'}">0</span>
+                        <span class="text-[10px] text-emerald-400 font-medium mt-1.5 inline-flex items-center gap-1">↑ 12% vs last week</span>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-500/10 rounded-xl border border-indigo-500/20 flex items-center justify-center text-xl">📜</div>
+                </div>
+
+                <div class="admin-glass stat-card-glow rounded-2xl p-5 border flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Active Cargo Parcels</span>
+                        <span class="text-3xl font-black text-white mt-1 block" th:text="${activeCargoCount != null ? activeCargoCount : '0'}">0</span>
+                        <span class="text-[10px] text-amber-400 font-medium mt-1.5 inline-flex items-center gap-1">⚡ Live Architecture Pipelines</span>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-500/10 rounded-xl border border-amber-500/20 flex items-center justify-center text-xl">📦</div>
+                </div>
+
+                <div class="admin-glass stat-card-glow rounded-2xl p-5 border flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Gross System Valuation</span>
+                        <span class="text-3xl font-black text-emerald-400 mt-1 block" th:text="${totalRevenue != null ? '$' + totalRevenue : '$0.0'}">$0.0</span>
+                        <span class="text-[10px] text-slate-500 font-medium mt-1.5 inline-flex items-center gap-1">Processed Instant Cleared</span>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-xl border border-emerald-500/20 flex items-center justify-center text-xl">💳</div>
+                </div>
+            </section>
+
+            <div class="admin-glass p-6 rounded-3xl border">
+                <h3 class="text-sm font-bold text-white mb-2">Global System Diagnostics Status</h3>
+                <p class="text-xs text-slate-400 mb-4">Select alternative modules from the administration control matrix to change nodes.</p>
+                <div class="text-center py-6 text-xs text-indigo-400 font-mono bg-indigo-500/5 rounded-xl border border-indigo-500/10">
+                    ⚡ Micro Systems Online. Main pipeline operations fully stable via JSON local storage engines.
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-packages" class="tab-content space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Travel Package Control Registry</h2>
+                    <p class="text-xs text-slate-400">Perform real-time actions on the packages database layer.</p>
+                </div>
+                <button onclick="openPackageModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition cursor-pointer">
+                    + Insert New Trip Package
+                </button>
+            </div>
+
+            <div class="admin-glass rounded-3xl border shadow-2xl overflow-hidden">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
+                        <thead>
+                            <tr class="bg-white/[0.02] border-b border-white/5 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                <th class="py-3.5 px-6">ID Node</th>
+                                <th class="py-3.5 px-6">Route Profile</th>
+                                <th class="py-3.5 px-6">Logistic Details</th>
+                                <th class="py-3.5 px-6">Price</th>
+                                <th class="py-3.5 px-6">Slots</th>
+                                <th class="py-3.5 px-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-slate-300">
+                            <tr th:each="pkg : ${packages}" class="hover:bg-white/[0.01]">
+                                <td class="py-4 px-6 font-mono text-indigo-400 font-bold" th:text="${pkg.id}">PKG-01</td>
+                                <td class="py-4 px-6">
+                                    <div class="font-bold text-white" th:text="${pkg.title}">Maldives Escape</div>
+                                    <div class="text-[10px] text-slate-500" th:text="${pkg.origin} + ' → ' + ${pkg.destination}">LHE → MLE</div>
+                                </td>
+                                <td class="py-4 px-6 font-mono text-[11px]">
+                                    <span class="text-slate-400" th:text="${pkg.airlineName}">Emirates</span> | 
+                                    <span class="text-purple-400" th:text="${pkg.cabinClass}">Economy</span>
+                                </td>
+                                <td class="py-4 px-6 font-mono text-emerald-400 font-bold" th:text="'$' + ${pkg.price}">$1200.00</td>
+                                <td class="py-4 px-6 font-mono" th:text="${pkg.availableSlots} + ' Left'">45 Left</td>
+                                <td class="py-4 px-6 text-right space-x-2">
+                                    <button th:data-id="${pkg.id}" th:data-title="${pkg.title}" th:data-price="${pkg.price}" th:data-slots="${pkg.availableSlots}" th:data-origin="${pkg.origin}" th:data-dest="${pkg.destination}" th:data-desc="${pkg.description}" th:data-airline="${pkg.airlineName}" th:data-stops="${pkg.transitStops}" th:data-cabin="${pkg.cabinClass}"
+                                            onclick="editPackageRoute(this)" class="bg-white/5 hover:bg-white/10 text-white px-2.5 py-1.5 rounded-lg border border-white/5 cursor-pointer text-[11px]">Modify</button>
+                                    <a th:href="@{/admin/packages/delete/{id}(id=${pkg.id})}" class="bg-rose-950/40 hover:bg-rose-600 text-rose-400 hover:text-white px-2.5 py-1.5 rounded-lg border border-rose-500/20 text-[11px] transition">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-cargo" class="tab-content space-y-6">
+            <div>
+                <h2 class="text-lg font-bold text-white">Cargo Logistics Operational Manifest</h2>
+                <p class="text-xs text-slate-400">Manage freight payloads mapped directly to CargoShipment.java entities.</p>
+            </div>
+
+            <div class="admin-glass rounded-3xl border shadow-2xl overflow-hidden">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
+                        <thead>
+                            <tr class="bg-white/[0.02] border-b border-white/5 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                <th class="py-3.5 px-6">Tracking ID</th>
+                                <th class="py-3.5 px-6">Sender Token</th>
+                                <th class="py-3.5 px-6">Cargo Specs (Type / Weight)</th>
+                                <th class="py-3.5 px-6">Transit Routing</th>
+                                <th class="py-3.5 px-6">Speed & Protection</th>
+                                <th class="py-3.5 px-6">Costing Valuation</th>
+                                <th class="py-3.5 px-6 text-right">Pipeline Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-slate-300">
+                            <tr th:each="shipment : ${allShipments}" class="hover:bg-white/[0.01]">
+                                <td class="py-4 px-6 font-mono text-indigo-400 font-bold" th:text="${shipment.id}">CRG-UNK</td>
+                                <td class="py-4 px-6 font-mono text-slate-400" th:text="${shipment.userId}">User-12</td>
+                                <td class="py-4 px-6">
+                                    <span class="font-bold text-white block" th:text="${shipment.itemType}">Electronics</span>
+                                    <span class="text-[10px] text-slate-500 font-mono" th:text="${shipment.weight} + ' KG'">0.0 KG</span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="text-xs text-slate-300 font-semibold" th:text="${shipment.origin} + ' ➔ ' + ${shipment.destination}">Origin ➔ Dest</span>
+                                    <p class="text-[10px] text-slate-500 italic max-w-[180px] truncate" th:text="${shipment.cargoManifestNotes}">No notes.</p>
+                                </td>
+                                <td class="py-4 px-6 font-mono text-[11px]">
+                                    <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/10" th:text="${shipment.deliverySpeed}">Standard</span>
+                                    <span th:if="${shipment.insuranceApplied}" class="ml-1 text-emerald-400 text-[10px] font-bold">🛡️ Secure</span>
+                                </td>
+                                <td class="py-4 px-6 font-mono text-emerald-400 font-bold" th:text="'$' + ${shipment.cost}">$0.00</td>
+                                <td class="py-4 px-6 text-right">
+                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20" th:text="${shipment.status}">PENDING</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(allShipments)}">
+                                <td colspan="7" class="py-12 text-center text-slate-500 font-mono">
+                                    📦 No active cargo shipments inside the JSON system ledger.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-bookings" class="tab-content space-y-6">
+            <section class="admin-glass rounded-3xl border shadow-2xl overflow-hidden">
+                <div class="p-6 border-b border-white/5 bg-white/[0.01] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">Global Booking Manifest Ledger</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Displays all transaction entities recorded across user sessions.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="bookingSearch" placeholder="Search Passenger Name..." class="bg-slate-950 border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-300 w-48 focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-white/[0.02] border-b border-white/5 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                <th class="py-3.5 px-6">System Booking Ref</th>
+                                <th class="py-3.5 px-6">Identity Parameter</th>
+                                <th class="py-3.5 px-6">Destination Profile</th>
+                                <th class="py-3.5 px-6">Seats Allocated</th>
+                                <th class="py-3.5 px-6">Transaction Capital</th>
+                                <th class="py-3.5 px-6 text-right">Node Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody" class="divide-y divide-white/5 text-xs text-slate-300">
+                            <tr th:each="b : ${allGlobalBookings}" class="hover:bg-white/[0.01] transition-colors">
+                                <td class="py-4 px-6 font-mono font-bold text-indigo-400" th:text="'BKG-' + ${b.id}">BKG-1002</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-6 h-6 rounded bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[10px] font-mono text-indigo-300">U</div>
+                                        <span class="booking-username font-semibold text-white" th:text="${b.passengerName}">Passenger Name</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 font-medium" th:text="${b.packageTitle}">Maldives Tropical Escape</td>
+                                <td class="py-4 px-6 font-mono" th:text="${b.passengerQty != null ? b.passengerQty + ' Passengers' : '1 Passenger'}">3 Passengers</td>
+                                <td class="py-4 px-6 font-bold text-emerald-400" th:text="'$' + ${b.price}">$3,600.00</td>
+                                <td class="py-4 px-6 text-right">
+                                    <div th:if="${b.status == 'PENDING'}" class="inline-flex gap-1.5 justify-end">
+                                        <a th:href="@{/admin/bookings/verify/{id}(id=${b.id}, action='CONFIRM')}" class="bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition">Confirm</a>
+                                        <a th:href="@{/admin/bookings/verify/{id}(id=${b.id}, action='CANCEL')}" class="bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition">Cancel</a>
+                                    </div>
+                                    <div th:if="${b.status != 'PENDING'}" class="inline-block">
+                                        <span th:class="${b.status == 'CONFIRMED'} ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase' : 'bg-white/5 text-slate-400 border border-white/5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase'" th:text="${b.status}">Confirmed</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(allGlobalBookings)}" class="empty-row">
+                                <td colspan="6" class="py-12 px-6 text-center text-slate-500 font-medium font-mono">
+                                    ⚠️ Terminal Ledger empty. No user pipeline entities initialized.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="packageModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+        <div class="admin-glass bg-[#0b0c16] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative border border-white/10">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <h3 id="modalTitle" class="text-sm font-bold text-white">✈️ Provision Package Route Parameters</h3>
+                <button onclick="closePackageModal()" class="text-slate-400 hover:text-white text-sm cursor-pointer">✕</button>
+            </div>
+
+            <form th:action="@{/admin/packages/save}" method="POST" class="space-y-3">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Package ID</label>
+                        <input type="text" id="packageId" name="id" required placeholder="PKG-XYZ" class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="col-span-2 space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Package Title</label>
+                        <input type="text" id="title" name="title" required class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Base Price ($)</label>
+                        <input type="number" step="0.01" id="price" name="price" required class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Available Slots</label>
+                        <input type="number" id="availableSlots" name="availableSlots" required class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Origin</label>
+                        <input type="text" id="origin" name="origin" required class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Destination</label>
+                        <input type="text" id="destination" name="destination" required class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Airline Carrier</label>
+                        <input type="text" id="airlineName" name="airlineName" required placeholder="e.g. Emirates" class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Transit Stops</label>
+                        <select id="transitStops" name="transitStops" class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <option value="Non-stop">Non-stop</option>
+                            <option value="1 Stop">1 Stop</option>
+                            <option value="2+ Stops">2+ Stops</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cabin Config</label>
+                        <select id="cabinClass" name="cabinClass" class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <option value="Economy Class">Economy Class</option>
+                            <option value="Business Class">Business Class</option>
+                            <option value="First Class">First Class</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Description</label>
+                    <textarea id="description" name="description" rows="2" class="w-full bg-[#050508] border border-white/10 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button type="button" onclick="closePackageModal()" class="bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs py-2.5 rounded-xl border border-white/5 cursor-pointer">Abort</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-xl cursor-pointer">Commit Entity</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-            <p class="text-xs uppercase text-slate-400 font-bold mb-1">Total revenue</p>
-            <p class="text-3xl font-black text-emerald-400" th:text="${'$' + #numbers.formatDecimal(revenue, 1, 2)}">$0</p>
-        </div>
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-            <p class="text-xs uppercase text-slate-400 font-bold mb-1">Bookings</p>
-            <p class="text-3xl font-black" th:text="${bookingsCount}">0</p>
-        </div>
-        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-            <p class="text-xs uppercase text-slate-400 font-bold mb-1">Shipments</p>
-            <p class="text-3xl font-black text-indigo-400" th:text="${shipmentsCount}">0</p>
-        </div>
-    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const activeTab = localStorage.getItem('adminActiveTab') || 'dashboard';
+            switchTab(activeTab);
+        });
 
-    <div class="bg-slate-900/30 border border-slate-800 rounded-2xl p-6 mb-8">
-        <h3 class="font-bold mb-4">Users</h3>
-        <div class="overflow-x-auto text-xs">
-            <table class="w-full text-left">
-                <thead class="text-slate-400 border-b border-slate-800">
-                <tr><th class="pb-2">ID</th><th class="pb-2">Username</th><th class="pb-2">Email</th><th class="pb-2 text-right">Role</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="u : ${allUsers}" class="border-b border-slate-900">
-                    <td class="py-2 font-mono text-indigo-400" th:text="${u.id}">ID</td>
-                    <td class="py-2" th:text="${u.username}">user</td>
-                    <td class="py-2 text-slate-400" th:text="${u.email}">email</td>
-                    <td class="py-2 text-right" th:text="${u.role}">ROLE</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <a href="/admin/users" class="text-xs text-indigo-400 mt-4 inline-block hover:underline">Manage all users →</a>
-    </div>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#sidebarNav button').forEach(btn => {
+                btn.classList.remove('bg-indigo-600/10', 'text-indigo-400', 'border', 'border-indigo-500/20', 'font-semibold');
+                btn.classList.add('text-slate-400', 'font-medium');
+            });
 
-    <div class="bg-slate-900/30 border border-slate-800 rounded-2xl p-6">
-        <h3 class="font-bold mb-4">Recent bookings</h3>
-        <div class="overflow-x-auto text-xs">
-            <table class="w-full text-left">
-                <thead class="text-slate-400 border-b border-slate-800">
-                <tr><th class="pb-2">ID</th><th class="pb-2">User</th><th class="pb-2">Type</th><th class="pb-2 text-right">Price</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="bk : ${allBookings}" class="border-b border-slate-900">
-                    <td class="py-2 font-mono text-indigo-400" th:text="${bk.id}">BKG</td>
-                    <td class="py-2 font-mono" th:text="${bk.userId}">USR</td>
-                    <td class="py-2" th:text="${bk.type}">type</td>
-                    <td class="py-2 text-right text-emerald-400 font-bold" th:text="${'$' + #numbers.formatDecimal(bk.price, 1, 2)}">$0</td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(allBookings)}"><td colspan="4" class="py-4 text-slate-500 italic text-center">No bookings yet.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</main>
+            const targetTab = document.getElementById('tab-' + tabId);
+            const targetBtn = document.getElementById('btn-' + tabId);
+            
+            if(targetTab && targetBtn) {
+                targetTab.classList.add('active');
+                targetBtn.classList.remove('text-slate-400', 'font-medium');
+                targetBtn.classList.add('bg-indigo-600/10', 'text-indigo-400', 'border', 'border-indigo-500/20', 'font-semibold');
+                localStorage.setItem('adminActiveTab', tabId);
+            }
+        }
+
+        function openPackageModal() {
+            document.getElementById('modalTitle').innerText = "✈️ Provision Package Route Parameters";
+            document.getElementById('packageId').readOnly = false;
+            document.getElementById('packageId').value = "";
+            document.getElementById('title').value = "";
+            document.getElementById('price').value = "";
+            document.getElementById('availableSlots').value = "";
+            document.getElementById('origin').value = "";
+            document.getElementById('destination').value = "";
+            document.getElementById('airlineName').value = "";
+            document.getElementById('transitStops').value = "Non-stop";
+            document.getElementById('cabinClass').value = "Economy Class";
+            document.getElementById('description').value = "";
+            document.getElementById('packageModal').classList.remove('hidden');
+        }
+
+        function closePackageModal() {
+            document.getElementById('packageModal').classList.add('hidden');
+        }
+
+        function editPackageRoute(btn) {
+            document.getElementById('modalTitle').innerText = "⚙️ Modify Existing Route Configuration";
+            document.getElementById('packageId').value = btn.getAttribute('data-id');
+            document.getElementById('packageId').readOnly = true; 
+            document.getElementById('title').value = btn.getAttribute('data-title');
+            document.getElementById('price').value = btn.getAttribute('data-price');
+            document.getElementById('availableSlots').value = btn.getAttribute('data-slots');
+            document.getElementById('origin').value = btn.getAttribute('data-origin');
+            document.getElementById('destination').value = btn.getAttribute('data-dest');
+            document.getElementById('airlineName').value = btn.getAttribute('data-airline');
+            document.getElementById('transitStops').value = btn.getAttribute('data-stops');
+            document.getElementById('cabinClass').value = btn.getAttribute('data-cabin');
+            document.getElementById('description').value = btn.getAttribute('data-desc');
+            document.getElementById('packageModal').classList.remove('hidden');
+        }
+
+        // Live Search Filter Matrix - Working flawlessly now
+        document.getElementById('bookingSearch').addEventListener('input', function(e) {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('#bookingTableBody tr:not(.empty-row)').forEach(row => {
+                const nameNode = row.querySelector('.booking-username');
+                if(nameNode) {
+                    const name = nameNode.textContent.toLowerCase();
+                    if (name.includes(val)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

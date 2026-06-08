@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "Maldives Tropical Escape",
+    "price": 1200.0,
+    "airlineName": "SkyWings Airlines",
+    "transitStops": "Non-stop",
+    "cabinClass": "Economy Class",
+    "origin": "New York",
+    "destination": "Maldives",
+    "description": "7 Days luxury cruise and resort package including premium underwater dining experience and guided coral reef snorkeling vectors.",
+    "availableSlots": 5
+  },
+  {
+    "id": "2",
+    "title": "Swiss Alps Winter Gateway",
+    "price": 2450.0,
+    "airlineName": "Prime Airways",
+    "transitStops": "1 Stop",
+    "cabinClass": "Business Class",
+    "origin": "London",
+    "destination": "Switzerland",
+    "description": "5 Nights premium ski resort stay in Zermatt with panoramic train tours, private skiing instructor architectures, and lounge passes.",
+    "availableSlots": 3
+  },
+  {
+    "id": "3",
+    "title": "Tokyo Neon & Heritage Tour",
+    "price": 1850.0,
+    "airlineName": "Ocean Air",
+    "transitStops": "2+ Stops",
+    "cabinClass": "First Class",
+    "origin": "Los Angeles",
+    "destination": "Tokyo",
+    "description": "Explore the harmony of futuristic streets and ancient temples. Includes Shinkansen bullet train passes and 5-star hotel configuration registry.",
+    "availableSlots": 8
+  }
+]

@@ -4,4 +4,10 @@
   "amount" : 1200.0,
   "method" : "CARD",
   "status" : "PAID"
+}, {
+  "id" : "PMT-2002",
+  "bookingId" : null,
+  "amount" : 1200.0,
+  "method" : "CARD",
+  "status" : "PAID"
 } ]

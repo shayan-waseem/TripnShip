@@ -1,17 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Wishlist')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<head th:replace="~{fragments/layout :: head('My Wishlist')}"></head>
+<body class="text-slate-100 min-h-screen font-sans flex flex-col bg-gradient-to-br from-[#090d1a] via-[#030712] to-[#0d0f21] antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
 <nav th:replace="~{fragments/layout :: user-nav('wishlist')}"></nav>
 
-<main class="flex-1 max-w-lg mx-auto w-full px-6 py-16 text-center">
-    <h1 class="text-3xl font-extrabold mb-2">Wishlist</h1>
-    <p class="text-slate-400 text-sm mb-8">Packages you save for later will appear here.</p>
-    <div class="p-8 rounded-2xl border-2 border-dashed border-slate-700 bg-white/5">
-        <p class="text-slate-500 italic text-sm">Your wishlist is empty.</p>
+<main class="flex-1 max-w-5xl mx-auto w-full px-6 py-12">
+    
+    <div class="relative mb-10 p-8 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="absolute -top-12 -left-12 w-48 h-48 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="h-2 w-2 rounded-full bg-pink-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-pink-400 uppercase tracking-widest">Saved Catalog</span>
+            </div>
+            <h1 class="text-4xl font-black tracking-tight text-white">
+                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400">My Wishlist</span>
+            </h1>
+            <p class="text-slate-400 mt-1 text-sm max-w-md">Packages and premium custom tours you saved to finalize or purchase later.</p>
+        </div>
     </div>
-    <a href="/travel" class="inline-block mt-8 bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl font-bold text-sm transition">Browse travel packages</a>
+
+    <div id="wishlistContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+        </div>
+
+    <div id="emptyState" class="hidden text-center py-24 border border-dashed border-white/10 rounded-3xl bg-white/[0.01] backdrop-blur-sm shadow-inner max-w-2xl mx-auto">
+        <div class="w-16 h-16 bg-gradient-to-b from-pink-500/10 to-transparent rounded-2xl border border-pink-500/20 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-950/20">
+            <svg class="w-7 h-7 text-pink-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-200 mb-2">Your wishlist is empty</h3>
+        <p class="text-slate-400 text-sm max-w-sm mx-auto mb-8 leading-relaxed">Explore premium global holiday structures and tap the favorite marker to cache registries here.</p>
+        
+        <a href="/travel" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl text-xs font-bold tracking-wider shadow-lg shadow-indigo-950/40 transition-all duration-300 hover:scale-[1.02]">
+            <span>Browse Travel Packages</span>
+            <span class="text-indigo-200">→</span>
+        </a>
+    </div>
+
 </main>
+
+<script> 
+    document.addEventListener('DOMContentLoaded', () => {
+        renderWishlist();
+    });
+
+    function renderWishlist() {
+        const savedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        const container = document.getElementById('wishlistContainer');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (savedWishlist.length === 0) {
+            if(container) container.classList.add('hidden');
+            if(emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
+        // Target rendering toggles
+        if(emptyState) emptyState.classList.add('hidden');
+        if(container) {
+            container.classList.remove('hidden');
+            container.innerHTML = ''; // Fresh DOM buffer state clear
+            
+            savedWishlist.forEach(item => {
+                // Formatting exact template tokens with your pristine layout structures
+                container.innerHTML += `
+                    <div class="group relative bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 p-6 rounded-3xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/30 shadow-xl shadow-black/30">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="font-mono text-[10px] bg-white/5 border border-white/10 px-2 py-0.5 rounded text-slate-400">PKG-${item.id || '001'}</span>
+                                <h3 class="text-xl font-bold text-white mt-2 group-hover:text-pink-300 transition-colors">${item.title}</h3>
+                            </div>
+                            <button onclick="removeItemFromCache('${item.id}')" class="text-slate-500 hover:text-pink-400 transition-colors cursor-pointer bg-transparent border-none">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <p class="text-slate-400 text-sm mb-6 line-clamp-2">${item.description || 'Premium global itinerary data configuration routing.'}</p>
+                        
+                        <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">Total Value</span>
+                                <span class="text-2xl font-black text-emerald-400 font-mono">$${item.price}</span>
+                            </div>
+                            <a href="/travel" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold tracking-wide transition duration-300 shadow-md shadow-indigo-950/50">
+                                Book Passage
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    // Dynamic clean removal from client cache structure without reloading page elements
+    function removeItemFromCache(id) {
+        let savedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        savedWishlist = savedWishlist.filter(item => item.id != id);
+        localStorage.setItem('wishlist', JSON.stringify(savedWishlist));
+        renderWishlist(); // Live updates rendering
+    }
+</script>
+
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

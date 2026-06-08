@@ -46,6 +46,16 @@
             font-size: 0.75rem;
             font-weight: bold;
         }
+        /* Heart Wishlist Animation */
+        .wishlist-btn svg {
+            transition: transform 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
+        }
+        .wishlist-btn.active svg {
+            transform: scale(1.2);
+            fill: #f43f5e;
+            stroke: #f43f5e;
+            filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.5));
+        }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col">
@@ -66,7 +76,7 @@
                     🏁 To: <span class="text-indigo-300" th:text="${selectedTo}">Any Destination</span>
                 </span>
                 <span class="bg-white/5 px-3 py-2 rounded-xl border border-white/5 flex items-center gap-1.5">
-                    👥 Passengers: <span class="text-indigo-300" th:text="${selectedQty}">1</span>
+                    👥 Passengers: <span class="text-indigo-300" id="globalPassengerDisplay" th:text="${selectedQty}">1</span>
                 </span>
             </div>
         </div>
@@ -167,15 +177,22 @@
             <div id="packagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <div th:each="package : ${packages}" 
-                     class="package-card premium-glass rounded-3xl p-6 flex flex-col justify-between shadow-xl border border-white/5"
+                     class="package-card premium-glass rounded-3xl p-6 flex flex-col justify-between shadow-xl border border-white/5 relative"
                      th:data-id="${package.id}"
                      th:data-title="${package.title}"
                      th:data-price="${package.price}" 
                      th:data-airline="${package.airlineName}" 
                      th:data-stops="${package.transitStops}" 
                      th:data-class="${package.cabinClass}">
+                    
+                    <button type="button" onclick="toggleWishlist(this)" class="wishlist-btn absolute top-5 right-5 z-10 p-2 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 backdrop-blur-sm cursor-pointer transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="rgba(255,255,255,0.6)" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+                    </button>
+
                     <div>
-                        <div class="flex justify-between items-start mb-4">
+                        <div class="flex justify-between items-start mb-4 pr-8">
                             <div>
                                 <h3 class="text-xl font-extrabold text-white" th:text="${package.title}">Package Title</h3>
                                 <p class="text-xs text-indigo-400 font-mono mt-1">
@@ -193,24 +210,43 @@
                         </div>
                     </div>
                     
-                    <div class="mt-8 pt-4 border-t border-white/5 flex items-center justify-between gap-4">
+                    <div class="mt-8 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Total Fare Price</span>
-                            <span class="text-2xl font-black text-emerald-400" th:text="'$' + ${package.price}">$0.0</span>
+                            <span class="text-2xl font-black text-emerald-400" th:id="'price-' + ${package.id}" th:text="'$' + ${package.price}">$0.0</span>
                         </div>
                         
-                        <button type="button" 
-                                th:data-id="${package.id}"
-                                th:data-title="${package.title}"
-                                th:data-price="${package.price}"
-                                onclick="initiateBookingGateway(this)"
-                                class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-3 rounded-xl transition whitespace-nowrap shadow-lg shadow-indigo-600/20">
-                            Book Passage
-                        </button>
+                        <div class="flex items-center gap-2.5 self-end sm:self-auto">
+                            <div class="flex items-center bg-black/40 border border-white/10 rounded-xl px-1.5 py-1">
+                                <button type="button" onclick="adjustCount(this, -1)" class="text-slate-400 hover:text-white px-2 py-0.5 text-sm font-extrabold select-none transition">-</button>
+                                <input type="text" value="1" readonly class="passenger-count w-6 text-center bg-transparent text-xs font-bold text-white focus:outline-none select-none">
+                                <button type="button" onclick="adjustCount(this, 1)" class="text-slate-400 hover:text-white px-2 py-0.5 text-sm font-extrabold select-none transition">+</button>
+                            </div>
+
+                            <button type="button" 
+                                    th:data-id="${package.id}"
+                                    th:data-title="${package.title}"
+                                    th:data-price="${package.price}"
+                                    onclick="initiateBookingGateway(this)"
+                                    class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition whitespace-nowrap shadow-lg shadow-indigo-600/20">
+                                Book Passage
+                            </button>
+                        </div>
                     </div>
                 </div>
 
             </div>
+        </div>
+    </div>
+    
+    <div id="successToast" class="hidden fixed bottom-10 right-10 z-50 bg-emerald-900/90 border border-emerald-500/50 text-white px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-xl animate-bounce">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">✨</span>
+            <div>
+                <h4 class="font-bold">Booking Successful!</h4>
+                <p class="text-xs text-emerald-200">Your passage has been reserved.</p>
+            </div>
+            <button onclick="document.getElementById('successToast').classList.add('hidden')" class="ml-4 text-emerald-400 hover:text-white">✕</button>
         </div>
     </div>
 </main>
@@ -225,8 +261,9 @@
             <button type="button" onclick="closeBookingGateway()" class="text-slate-400 hover:text-white transition text-sm">✕</button>
         </div>
 
-        <form th:action="@{/travel/book}" method="POST" class="space-y-5">
+        <form th:action="@{/travel/book}" method="POST" id="securePaymentForm" class="space-y-4">
             <input type="hidden" id="modalPackageId" name="packageId">
+            <input type="hidden" id="modalPassengerQty" name="passengerQty" value="1">
             
             <div class="bg-white/5 border border-white/5 rounded-2xl p-4">
                 <span class="text-[10px] text-indigo-400 uppercase font-bold tracking-widest block mb-1">Selected Package</span>
@@ -238,16 +275,34 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Select Payment Architecture</label>
-                <select name="paymentMethod" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-3 text-slate-200 focus:outline-none cursor-pointer focus:border-indigo-500 transition">
-                    <option value="Credit/Debit Card">💳 Credit/Debit Card (Visa/Mastercard)</option>
-                    <option value="Digital Wallet">🌐 Digital Wallet Services</option>
-                    <option value="Crypto Vector">🪙 Decentralized Crypto Vector</option>
-                </select>
+            <div class="space-y-3.5">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Phone Vector Core</label>
+                    <input type="tel" name="phoneNumber" required placeholder="+1 (555) 019-2834" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2 space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Credit Card Architecture</label>
+                        <input type="text" name="cardNumber" required maxlength="19" placeholder="4111 2222 3333 4444" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">CVV Security</label>
+                        <input type="password" name="cvv" required maxlength="4" placeholder="•••" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-2.5 text-slate-200 text-center focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Select Payment Architecture</label>
+                    <select name="paymentMethod" class="w-full bg-slate-950 border border-white/10 text-sm rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none cursor-pointer focus:border-indigo-500 transition">
+                        <option value="Credit/Debit Card">💳 Credit/Debit Card (Visa/Mastercard)</option>
+                        <option value="Digital Wallet">🌐 Digital Wallet Services</option>
+                        <option value="Crypto Vector">🪙 Decentralized Crypto Vector</option>
+                    </select>
+                </div>
             </div>
 
-            <p class="text-[11px] text-slate-500 leading-normal">
+            <p class="text-[11px] text-slate-500 leading-normal pt-1">
                 By confirming this gateway route, you initiate live routing confirmation on our booking core nodes.
             </p>
 
@@ -266,31 +321,129 @@
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 
 <script>
-    // Payment Architecture Gateway Control Logic - Fixed to extract data cleanly from button element
-    void function initModalControl() {
-        window.initiateBookingGateway = function(buttonElement) {
-            const id = buttonElement.getAttribute('data-id');
-            const title = buttonElement.getAttribute('data-title');
-            const price = buttonElement.getAttribute('data-price');
+    // Unified App State Realization Engine
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. Sync State Configurations Across localStorage Maps on Initialization
+        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        document.querySelectorAll('.package-card').forEach(card => {
+            const id = card.getAttribute('data-id');
+            const btn = card.querySelector('.wishlist-btn');
+            if (wishlist.some(item => String(item.id) === String(id))) {
+                if (btn) btn.classList.add('active');
+            }
+        });
 
-            document.getElementById('modalPackageId').value = id;
-            document.getElementById('modalPackageTitle').innerText = title;
-            document.getElementById('modalPackagePrice').innerText = '$' + parseFloat(price).toFixed(1);
-            
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('hidden');
+        // 2. Trigger Initial Packaging Filter Array Setup
+        const totalCards = document.querySelectorAll('.package-card').length;
+        if (totalCards > 0) {
+            filterPackages(); 
+        }
+
+        // 3. Original Toast Notification Trigger via URL parameters remains 100% functional
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success')) {
+            const toast = document.getElementById('successToast');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+    });
+
+    // Wishlist Persistence Core Logic
+    function toggleWishlist(element) {
+        element.classList.toggle('active');
+        const card = element.closest('.package-card');
+        const packageId = card.getAttribute('data-id');
+        const pkgTitle = card.getAttribute('data-title');
+        
+        const item = {
+            id: packageId,
+            title: pkgTitle,
+            price: card.getAttribute('data-price'),
+            airlineName: card.getAttribute('data-airline'),
+            transitStops: card.getAttribute('data-stops'),
+            cabinClass: card.getAttribute('data-class'),
+            origin: card.getAttribute('data-origin'),
+            destination: card.getAttribute('data-destination'),
+            description: card.getAttribute('data-desc')
         };
 
-        window.closeBookingGateway = function() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.add('hidden');
-        };
-    }();
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        const index = wishlist.findIndex(x => String(x.id) === String(item.id));
+
+        if (element.classList.contains('active')) {
+            if (index === -1) {
+                wishlist.push(item);
+            }
+            console.log(`Added target configuration to wishlist vector: ${pkgTitle}`);
+        } else {
+            if (index > -1) {
+                wishlist.splice(index, 1);
+            }
+            console.log(`Removed target configuration from wishlist vector: ${pkgTitle}`);
+        }
+
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+        // BACKEND CONTROLLER PIPELINE SYNC
+        fetch('/travel/wishlist/toggle/' + packageId, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || ''
+            }
+        })
+        .then(res => {
+            if (!res.ok) console.warn('Wishlist database node returned code: ' + res.status);
+        })
+        .catch(err => console.error('Database async synchronization fault:', err));
+    }
+
+    // Dynamic Increment/Decrement logic with Multiplier Calculations
+    function adjustCount(button, direction) {
+        const container = button.parentElement;
+        const countInput = container.querySelector('.passenger-count');
+        let currentCount = parseInt(countInput.value) || 1;
+        
+        currentCount += direction;
+        if (currentCount < 1) currentCount = 1;
+        if (currentCount > 10) currentCount = 10;
+        
+        countInput.value = currentCount;
+
+        const card = button.closest('.package-card');
+        const basePrice = parseFloat(card.getAttribute('data-price')) || 0;
+        const packageId = card.getAttribute('data-id');
+        
+        const total = (basePrice * currentCount).toFixed(1);
+        document.getElementById('price-' + packageId).innerText = '$' + total;
+    }
+
+    // Modal Data Pipeline Hydration Vector
+    function initiateBookingGateway(buttonElement) {
+        const card = buttonElement.closest('.package-card');
+        const id = card.getAttribute('data-id');
+        const title = card.getAttribute('data-title');
+        const qtyValue = parseInt(card.querySelector('.passenger-count').value) || 1;
+        const computedPriceText = document.getElementById('price-' + id).innerText;
+
+        document.getElementById('modalPackageId').value = id;
+        document.getElementById('modalPassengerQty').value = qtyValue;
+        document.getElementById('modalPackageTitle').innerText = title;
+        document.getElementById('modalPackagePrice').innerText = computedPriceText;
+        
+        document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    function closeBookingGateway() {
+        document.getElementById('paymentModal').classList.add('hidden');
+    }
 
     function updatePriceLabel(val) {
         document.getElementById('priceLabel').innerText = '$' + parseInt(val).toLocaleString();
     }
 
+    // Filtering Matrix utilizing clean layouts matching layout structures smoothly
     function filterPackages() {
         const maxPrice = parseFloat(document.getElementById('priceRange').value);
         const selectedAirlines = Array.from(document.querySelectorAll('input[name="airline"]:checked')).map(el => el.value);
@@ -330,13 +483,6 @@
         updatePriceLabel(5000);
         filterPackages();
     }
-
-    window.addEventListener('DOMContentLoaded', () => { 
-        const totalCards = document.querySelectorAll('.package-card').length;
-        if(totalCards > 0) {
-            filterPackages(); 
-        }
-    });
 </script>
 </body>
 </html>

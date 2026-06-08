@@ -1,84 +1,133 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Cargo Shipping')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Cargo Shipping - Premium')}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root { --glass: rgba(255, 255, 255, 0.05); }
+        body { background: radial-gradient(circle at 50% -20%, #1e1b4b, #030712); min-height: 100vh; }
+        
+        .premium-glass { 
+            background: var(--glass); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 32px; 
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .glass-input { 
+            background: rgba(0,0,0,0.2) !important; 
+            border: 1px solid rgba(255,255,255,0.1) !important; 
+            border-radius: 16px; 
+            padding: 16px 20px; 
+            transition: 0.4s;
+        }
+        .glass-input:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+        .step-content { display: none; }
+        .step-active { display: block; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .step-indicator { transition: all 0.4s ease; }
+        .step-active-dot { background: #4f46e5; box-shadow: 0 0 15px #4f46e5; transform: scale(1.2); }
+    </style>
+</head>
+<body class="text-white font-sans">
+
 <nav th:replace="~{fragments/layout :: user-nav('cargo')}"></nav>
 
-<main class="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
-    <div class="mb-8">
-        <h1 class="text-3xl font-extrabold">Ship Cargo</h1>
-        <p class="text-slate-400 text-sm mt-1">Register a shipment — you will be redirected to tracking when done.</p>
+<main class="max-w-xl mx-auto px-6 py-16">
+    
+    <div th:if="${successMessage}" class="mb-8 p-4 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-2xl text-center font-bold animate-bounce">
+        ✨ <span th:text="${successMessage}"></span>
     </div>
 
-    <div th:if="${param.success}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
-        Shipment registered! <a href="/tracking" class="underline font-semibold">Track it here</a>.
+    <div id="rate-badge" class="flex justify-center mb-10">
+        <div class="px-6 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-indigo-300">
+            Current Rate: <span class="text-white font-bold ml-2">$10.00 / KG</span>
+        </div>
     </div>
 
-    <form th:action="@{/cargo/process}" th:object="${shipment}" method="POST"
-          class="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-5 shadow-xl mb-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Item type</label>
-                <input type="text" th:field="*{itemType}" required placeholder="Electronics, furniture…"
-                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Weight (kg)</label>
-                <input type="number" step="0.1" th:field="*{weight}" required
-                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Origin</label>
-                <input type="text" th:field="*{origin}" required
-                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Destination</label>
-                <input type="text" th:field="*{destination}" required
-                       class="w-full bg-black/30 border border-indigo-500/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500">
-            </div>
+    <div class="flex justify-between mb-12 px-4 relative">
+        <div class="absolute top-4 left-0 w-full h-[2px] bg-white/10 -z-10"></div>
+        <div id="ind-1" class="step-indicator w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-sm step-active-dot">1</div>
+        <div id="ind-2" class="step-indicator w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">2</div>
+        <div id="ind-3" class="step-indicator w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">3</div>
+        <div id="ind-4" class="step-indicator w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">4</div>
+    </div>
+
+    <form th:action="@{/cargo/process}" th:object="${shipment}" method="POST" class="premium-glass">
+        
+        <div id="step-1" class="step-content step-active space-y-5">
+            <h2 class="text-2xl font-bold mb-4">Consignment Details</h2>
+            <input type="text" th:field="*{itemType}" placeholder="Item Type (e.g. Electronics)" class="glass-input w-full" required>
+            <input type="number" th:field="*{weight}" placeholder="Weight in KG" class="glass-input w-full" required>
         </div>
-        <div class="p-4 bg-indigo-950/30 rounded-xl border border-indigo-500/20 space-y-3">
-            <div class="flex flex-wrap justify-between items-center gap-3">
-                <span class="text-sm">Delivery speed</span>
-                <select th:field="*{deliverySpeed}" class="bg-black/40 border border-white/20 rounded-lg px-3 py-2 text-sm text-white">
-                    <option value="Standard">Standard</option>
-                    <option value="Express">Express (+fee)</option>
-                </select>
-            </div>
-            <label class="flex items-center gap-3 text-sm cursor-pointer">
-                <input type="checkbox" th:field="*{insuranceApplied}" class="w-4 h-4 accent-indigo-500">
-                Add cargo insurance
-            </label>
+
+        <div id="step-2" class="step-content space-y-5">
+            <h2 class="text-2xl font-bold mb-4">Route Vector</h2>
+            <input type="text" th:field="*{origin}" placeholder="Origin Hub" class="glass-input w-full" required>
+            <input type="text" th:field="*{destination}" placeholder="Destination Hub" class="glass-input w-full" required>
         </div>
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition">Register shipment</button>
+
+        <div id="step-3" class="step-content space-y-5">
+            <h2 class="text-2xl font-bold mb-4">Logistics</h2>
+            <select th:field="*{deliverySpeed}" class="glass-input w-full text-white">
+                <option value="Standard">Standard Transit</option>
+                <option value="Express">Express Flight (+$150)</option>
+            </select>
+        </div>
+
+        <div id="step-4" class="step-content space-y-6">
+            <h2 class="text-2xl font-bold">Review Manifest</h2>
+            <div class="bg-black/30 p-6 rounded-2xl border border-white/5 space-y-3">
+                <div class="flex justify-between text-slate-400"><span>Item:</span> <span id="sum-item" class="text-white font-bold"></span></div>
+                <div class="flex justify-between text-slate-400"><span>Weight:</span> <span id="sum-weight" class="text-white font-bold"></span></div>
+                <div class="pt-4 mt-2 border-t border-white/10 flex justify-between text-xl font-black">
+                    <span>Total Cost:</span> <span id="sum-total" class="text-emerald-400"></span>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl font-bold tracking-widest uppercase transition transform hover:scale-105">Confirm & Pay</button>
+        </div>
+
+        <div class="mt-10 flex justify-between">
+            <button type="button" id="prevBtn" class="hidden text-slate-500 font-bold hover:text-white px-6" onclick="changeStep(-1)">← Back</button>
+            <button type="button" id="nextBtn" class="ml-auto bg-indigo-600 px-8 py-3 rounded-xl font-bold hover:bg-indigo-500" onclick="changeStep(1)">Next Step</button>
+        </div>
     </form>
-
-    <h2 class="text-lg font-bold mb-4 text-indigo-300">Your shipments</h2>
-    <div class="overflow-x-auto rounded-2xl border border-white/10">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase">
-            <tr>
-                <th class="p-4">ID</th>
-                <th class="p-4">Route</th>
-                <th class="p-4">Status</th>
-                <th class="p-4 text-right">Cost</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="ship : ${myShipments}" class="border-t border-white/5 hover:bg-white/5">
-                <td class="p-4 font-mono text-indigo-400" th:text="${ship.id}">SHP</td>
-                <td class="p-4" th:text="${ship.origin + ' → ' + ship.destination}">Route</td>
-                <td class="p-4"><span class="px-2 py-1 rounded text-xs bg-amber-500/20 text-amber-300" th:text="${ship.status}">Status</span></td>
-                <td class="p-4 text-right font-bold text-emerald-400" th:text="${'$' + #numbers.formatDecimal(ship.cost, 1, 2)}">$0</td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(myShipments)}">
-                <td colspan="4" class="p-8 text-center text-slate-500 italic">No shipments yet. Submit the form above.</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 </main>
-<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    let currentStep = 1;
+    function changeStep(dir) {
+        document.getElementById('step-' + currentStep).classList.remove('step-active');
+        currentStep += dir;
+        document.getElementById('step-' + currentStep).classList.add('step-active');
+        
+        // Update Badge
+        document.getElementById('rate-badge').style.opacity = (currentStep === 1) ? "1" : "0";
+        
+        // Update Buttons
+        document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
+        document.getElementById('nextBtn').classList.toggle('hidden', currentStep === 4);
+        
+        // Update Stepper
+        document.querySelectorAll('.step-indicator').forEach((el, i) => {
+            el.classList.toggle('step-active-dot', i+1 <= currentStep);
+            el.classList.toggle('bg-white/10', i+1 > currentStep);
+        });
+
+        if (currentStep === 4) populateSummary();
+    }
+
+    function populateSummary() {
+        const weight = parseFloat(document.querySelector('[name="weight"]').value) || 0;
+        const total = (weight * 10) + (document.querySelector('[name="deliverySpeed"]').value === 'Express' ? 150 : 0);
+        document.getElementById('sum-item').innerText = document.querySelector('[name="itemType"]').value;
+        document.getElementById('sum-weight').innerText = weight + " KG";
+        document.getElementById('sum-total').innerText = "$" + total.toFixed(2);
+    }
+</script>
 </body>
 </html>

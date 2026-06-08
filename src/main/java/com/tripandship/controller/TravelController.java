@@ -25,6 +25,7 @@ public class TravelController {
     private final BookingService bookingService;
     private final SessionService sessionService;
 
+    // Constructor Injection
     public TravelController(TravelRepository travelRepository,
                             BookingService bookingService,
                             SessionService sessionService) {
@@ -33,6 +34,9 @@ public class TravelController {
         this.sessionService = sessionService;
     }
 
+    /**
+     * Travel Dashboard showing available tour packages
+     */
     @GetMapping
     public String showTravelDashboard(@RequestParam(value = "from", required = false) String from,
                                       @RequestParam(value = "to", required = false) String to,
@@ -45,12 +49,12 @@ public class TravelController {
         try {
             // Core dynamic database search integration
             if (from != null && !from.trim().isEmpty() && to != null && !to.trim().isEmpty()) {
-                // MS SQL / JpaRepository custom filter method call
                 packages = travelRepository.findByOriginAndDestination(from.trim(), to.trim()); 
             } else {
                 packages = travelRepository.findAll();
             }
         } catch (Exception e) {
+            System.err.println("🔍 [TravelDashboard] Error fetching packages: " + e.getMessage());
             packages = new ArrayList<>();
         }
 
@@ -67,29 +71,62 @@ public class TravelController {
         return "travel";
     }
 
+    /**
+     * Processes the booking form submission and credit card authorization
+     */
     @PostMapping("/book")
-    public String confirmTravelBooking(@RequestParam String packageId,
-                                       @RequestParam String paymentMethod,
+    public String confirmTravelBooking(@RequestParam("packageId") String packageId,
+                                       @RequestParam("passengerQty") Integer passengerQty,
+                                       @RequestParam("phoneNumber") String phoneNumber,
+                                       @RequestParam("cardNumber") String cardNumber,
+                                       @RequestParam("cvv") String cvv,
+                                       @RequestParam("paymentMethod") String paymentMethod,
                                        HttpSession session) {
         try {
             String userId = sessionService.requireUserId(session);
-            Booking finalizedBooking = bookingService.processTravelBooking(userId, packageId, paymentMethod);
+            System.out.println("💳 [Booking Process] Initiating booking for User: " + userId + " | Package: " + packageId);
+
+            Booking finalizedBooking = bookingService.processTravelBooking(
+                userId, packageId, passengerQty, phoneNumber, cardNumber, cvv, paymentMethod
+            );
+            
             if (finalizedBooking != null && "CONFIRMED".equals(finalizedBooking.getStatus())) {
-                return "redirect:/travel/history?success=true";
+                System.out.println("✅ [Booking Process] Successfully confirmed Booking ID: " + finalizedBooking.getId());
+                return "redirect:/travel?success=true";
             }
         } catch (Exception e) {
+            System.err.println("❌ [Booking Process] System fault during booking: " + e.getMessage());
             return "redirect:/travel?error=system_fault";
         }
         return "redirect:/travel?error=payment_failed";
     }
 
+    /**
+     * Displays the dynamic booking history dashboard for the logged-in user
+     */
     @GetMapping("/history")
     public String showBookingHistory(HttpSession session, Model model) {
         try {
+            // Session se active user ki ID nikalna (e.g., "noor" ya "USR-105")
             String userId = sessionService.requireUserId(session);
+            System.out.println("⏳ [History Dashboard] Loading bookings for User Session ID: '" + userId + "'");
+
+            // Service layer se bookings fetch karna
             List<Booking> userBookings = bookingService.getBookingsByUser(userId);
-            model.addAttribute("bookings", userBookings != null ? userBookings : new ArrayList<>());
+            
+            if (userBookings == null) {
+                userBookings = new ArrayList<>();
+            }
+
+            // 📢 CRITICAL DEBUG LOG: Isse terminal me size check karein!
+            System.out.println("📊 [History Dashboard] Total bookings loaded from JSON for '" + userId + "': " + userBookings.size());
+            for (Booking b : userBookings) {
+                System.out.println("   -> ID: " + b.getId() + " | Type: " + b.getType() + " | Price: $" + b.getPrice());
+            }
+
+            model.addAttribute("bookings", userBookings);
         } catch (Exception e) {
+            System.err.println("❌ [History Dashboard] Error loading history: " + e.getMessage());
             model.addAttribute("bookings", new ArrayList<>());
         }
         return "booking-history";

@@ -1,48 +1,121 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Track Shipment')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex flex-col">
+<body class="text-slate-100 min-h-screen font-sans flex flex-col bg-gradient-to-br from-[#090d1a] via-[#030712] to-[#0d0f21] antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
 <nav th:replace="~{fragments/layout :: user-nav('tracking')}"></nav>
 
-<main class="flex-1 max-w-3xl mx-auto w-full px-6 py-10">
-    <div class="mb-8">
-        <h1 class="text-3xl font-extrabold">Shipment Tracking</h1>
-        <p class="text-slate-400 text-sm mt-1">Real-time status for your cargo.</p>
-    </div>
-
-    <div th:if="${param.success}" class="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-xl text-center">
-        New shipment registered and is now in transit.
-    </div>
-
-    <div th:if="${tracked != null}" class="mb-8 p-6 bg-indigo-600/10 border border-indigo-500/30 rounded-2xl">
-        <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">Latest shipment</p>
-        <p class="font-mono text-indigo-300 text-lg mb-2" th:text="${tracked.id}">SHP-ID</p>
-        <p class="text-sm mb-1" th:text="${tracked.itemType + ' · ' + tracked.origin + ' → ' + tracked.destination}">Details</p>
-        <p class="text-2xl font-bold text-amber-300 mt-3" th:text="${tracked.status}">In Transit</p>
-        <p class="text-emerald-400 font-bold mt-2" th:text="${'$' + #numbers.formatDecimal(tracked.cost, 1, 2)}">$0</p>
-    </div>
-
-    <form method="get" action="/tracking" class="mb-8 flex gap-2">
-        <input type="text" name="id" placeholder="Enter shipment ID (e.g. SHP-ABC12)"
-               class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500">
-        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-5 py-3 rounded-xl font-bold text-sm transition">Lookup</button>
-    </form>
-
-    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">All your shipments</h2>
-    <div class="space-y-3">
-        <a th:each="s : ${shipments}" th:href="@{/tracking(id=${s.id})}"
-           class="block p-4 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-500/40 transition">
-            <div class="flex justify-between items-center">
-                <span class="font-mono text-indigo-400" th:text="${s.id}">ID</span>
-                <span class="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-300" th:text="${s.status}">Status</span>
+<main class="flex-1 max-w-4xl mx-auto w-full px-6 py-12">
+    
+    <div class="relative mb-10 p-8 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="absolute -top-12 -left-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                <span class="text-xs font-semibold text-indigo-400 uppercase tracking-widest">Logistics Network</span>
             </div>
-            <p class="text-sm text-slate-400 mt-1" th:text="${s.origin + ' → ' + s.destination}">Route</p>
+            <h1 class="text-4xl font-black tracking-tight text-white">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Shipment Tracking</span>
+            </h1>
+            <p class="text-slate-400 mt-1 text-sm max-w-md">Real-time terminal transitions, routing logs, and active status reports.</p>
+        </div>
+    </div>
+
+    <div th:if="${param.success}" class="mb-8 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center justify-center gap-3 backdrop-blur-md animate-fade-in shadow-lg shadow-emerald-950/20">
+        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="font-medium tracking-wide">New shipment registered and successfully initiated in transit!</span>
+    </div>
+
+    <div th:if="${tracked != null}" class="group relative bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/10 p-8 rounded-3xl backdrop-blur-xl mb-10 overflow-hidden shadow-2xl shadow-slate-950/50">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-600/10 transition-all duration-500"></div>
+        
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 font-mono bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20 shadow-inner">Focus Target</span>
+                <h2 class="text-3xl font-black font-mono text-white mt-3 tracking-wider group-hover:text-indigo-300 transition-colors duration-300" th:text="${tracked.id}">SHP-ID</h2>
+            </div>
+            
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl border bg-slate-950/60 shadow-inner"
+                 th:classappend="${tracked.status == 'Delivered'} ? 'border-emerald-500/30' : 'border-amber-500/30'">
+                <span class="h-2 w-2 rounded-full" 
+                      th:classappend="${tracked.status == 'Delivered'} ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]'"></span>
+                <span class="text-xs font-black uppercase tracking-widest" 
+                      th:classappend="${tracked.status == 'Delivered'} ? 'text-emerald-400' : 'text-amber-400'"
+                      th:text="${tracked.status}">In Transit</span>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/40 border border-white/5 p-6 rounded-2xl mb-6 shadow-inner">
+            <span class="text-slate-500 text-[10px] font-bold uppercase tracking-wider block mb-3">Manifest Log Routing</span>
+            <div class="flex items-center gap-3 text-sm sm:text-base">
+                <div class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-slate-200 font-mono text-xs font-semibold" th:text="${tracked.itemType}">Details</div>
+                <div class="flex items-center gap-2 text-indigo-300 font-bold tracking-wide">
+                    <span class="capitalize" th:text="${tracked.origin}">Origin</span>
+                    <span class="text-slate-600 font-normal">→</span>
+                    <span class="capitalize text-indigo-400 th-destination" th:text="${tracked.destination}">Destination</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-5 border-t border-white/[0.06]">
+            <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">Freight Invoice Cost</span>
+            <span class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 font-mono tracking-tight" th:text="${'$' + #numbers.formatDecimal(tracked.cost, 1, 2)}">$0</span>
+        </div>
+    </div>
+
+    <div class="bg-white/[0.01] border border-white/5 backdrop-blur-xl rounded-3xl p-5 mb-12 shadow-xl">
+        <form method="get" action="/tracking" class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                    <svg class="w-5 h-5 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" name="id" placeholder="Scan or type package identifier (e.g. SHP-ABC12)"
+                       class="w-full pl-12 pr-4 py-4 bg-slate-950/60 border border-white/10 rounded-2xl text-white placeholder-slate-500 font-mono text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 shadow-inner">
+            </div>
+            <button type="submit" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-2xl text-sm font-bold tracking-wider shadow-lg shadow-indigo-950/40 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center">
+                Lookup Manifest
+            </button>
+        </form>
+    </div>
+
+    <div class="flex items-center gap-4 mb-6">
+        <h2 class="text-xs font-black uppercase tracking-widest text-slate-500 whitespace-nowrap">Global Shipment Manifest History</h2>
+        <div class="w-full h-[1px] bg-gradient-to-r from-white/10 to-transparent"></div>
+    </div>
+
+    <div class="space-y-3.5">
+        <a th:each="s : ${shipments}" th:href="@{/tracking(id=${s.id})}"
+           class="group block bg-slate-900/20 hover:bg-slate-900/50 border border-white/[0.04] hover:border-indigo-500/40 p-5 rounded-2xl transition-all duration-300 flex justify-between items-center shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 backdrop-blur-sm">
+            <div class="space-y-1.5">
+                <h4 class="font-mono font-bold text-slate-300 group-hover:text-indigo-400 transition-colors duration-300 text-base tracking-wide" th:text="${s.id}">ID</h4>
+                <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                    <span class="capitalize px-2 py-0.5 bg-white/5 rounded text-slate-300 font-mono" th:text="${s.origin + ' → ' + s.destination}">Route</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span th:classappend="${s.status == 'Delivered'} ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'" 
+                      class="px-3 py-1 border rounded-xl text-[10px] font-black uppercase tracking-widest shadow-inner" th:text="${s.status}">Status</span>
+                <svg class="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors duration-300 transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </div>
         </a>
-        <p th:if="${#lists.isEmpty(shipments)}" class="text-slate-500 text-sm italic py-6 text-center">
-            No shipments to track. <a href="/cargo" class="text-indigo-400 underline">Ship cargo</a> first.
-        </p>
+
+        <div th:if="${#lists.isEmpty(shipments)}" class="text-center py-20 border border-dashed border-white/10 rounded-3xl bg-white/[0.01] backdrop-blur-sm">
+            <div class="w-14 h-14 bg-slate-950/60 rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-200 mb-1">No Cargo Records Active</h3>
+            <p class="text-slate-400 text-sm max-w-xs mx-auto mb-4">You have no recorded freight items running inside your active terminal account.</p>
+            <a href="/cargo" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors group">
+                <span>Dispatch New Shipment Now</span>
+                <span class="transform group-hover:translate-x-0.5 transition-transform">→</span>
+            </a>
+        </div>
     </div>
 </main>
+
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

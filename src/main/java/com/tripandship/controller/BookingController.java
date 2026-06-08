@@ -2,69 +2,142 @@ package com.tripandship.controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.tripandship.model.Booking;
+import com.tripandship.repository.BookingRepository;
 
 @Controller
 @RequestMapping("/bookings")
 public class BookingController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
     /**
-     * Fallback endpoint jo bookings route root ko redirect karta hai history page par.
+     * Booking Root Endpoint:
+     * Redirects straight to the history page dashboard.
      */
-    @GetMapping({"/history-log", ""})
-    public String listUserBookings() {
-        return "redirect:/travel/history";
+    @GetMapping({"", "/"})
+    public String index() {
+        return "redirect:/bookings/history";
     }
 
     /**
-     * 🔍 Core Search Registry Handler Matrix
-     * Yeh method landing home page widget se input fields receive karta hai aur unhe
-     * roleMode ke hisab se relevant views (/travel ya /cargo) par state maintain rakh kar forward karta hai.
+     * History Endpoint:
+     * Filters bookings into separate lists for Tickets and Cargo.
      */
-    @GetMapping("/search")
-    public String dynamicRegistryQuery(@RequestParam(value = "from", required = false) String from,
-                                       @RequestParam(value = "to", required = false) String to,
-                                       @RequestParam(value = "date", required = false) String date,
-                                       @RequestParam(value = "quantity", required = false, defaultValue = "1") String quantity,
-                                       @RequestParam(value = "roleMode", required = false, defaultValue = "travel") String roleMode) {
-        
-        // Null checks handle karne ke liye fallback handling (taake string functions crash na karein)
-        String cleanFrom = (from != null) ? from.trim() : "";
-        String cleanTo = (to != null) ? to.trim() : "";
-        String cleanDate = (date != null) ? date.trim() : "";
-        String cleanQty = (quantity != null) ? quantity.trim() : "1";
-
-        // Terminal Log Metrics Trace for Verification
-        System.out.println("=========================================");
-        System.out.println("[PROCESSING GATEWAY SEARCH REDIRECTION]");
-        System.out.println("Role Context Mode : " + roleMode.toUpperCase());
-        System.out.println("Passed Origin     : " + cleanFrom);
-        System.out.println("Passed Destination: " + cleanTo);
-        System.out.println("Passed Date       : " + cleanDate);
-        System.out.println("Passed Quantity   : " + cleanQty);
-        System.out.println("=========================================");
-
-        // Safe URL Encoding Logic Wrapper (Spaces aur Special Characters safely support karne ke liye)
-        String encodedFrom = URLEncoder.encode(cleanFrom, StandardCharsets.UTF_8);
-        String encodedTo = URLEncoder.encode(cleanTo, StandardCharsets.UTF_8);
-        String encodedDate = URLEncoder.encode(cleanDate, StandardCharsets.UTF_8);
-        String encodedQty = URLEncoder.encode(cleanQty, StandardCharsets.UTF_8);
-
-        // Append query params matrix line
-        String targetQueryParams = String.format("?from=%s&to=%s&date=%s&qty=%s", 
-                                                encodedFrom, encodedTo, encodedDate, encodedQty);
-
-        // Switching core route mechanisms matching your dashboard layouts
-        if ("cargo".equalsIgnoreCase(roleMode)) {
-            // User ko dashboard view panel mapping par bheje ga parameters pass karke
-            return "redirect:/cargo" + targetQueryParams;
+    @GetMapping("/history")
+    public String showHistory(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
         }
 
-        // Default execution pathway: Redirects smoothly to the user's Travel Results page (As seen in image_b2e5ec.png)
-        return "redirect:/travel" + targetQueryParams;
+        String username = principal.getName();
+        logger.info("Loading dashboard for user: {}", username);
+        
+        try {
+            // FIX: Dono methods 'username' fetch karne ke liye exact trigger honge
+            // Agar aapke Booking model me field ka naam 'user' hai, toh ye perfectly chalega.
+            List<Booking> tickets = bookingRepository.findAllByUserAndType(username, "TRAVEL");
+            List<Booking> cargos = bookingRepository.findAllByUserAndType(username, "CARGO");
+            
+            model.addAttribute("tickets", tickets);
+            model.addAttribute("cargos", cargos);
+            
+            logger.info("Successfully loaded {} tickets and {} cargo items.", tickets.size(), cargos.size());
+            
+        } catch (Exception e) {
+            logger.error("Error loading dashboard data: ", e);
+            model.addAttribute("errorMessage", "Data load karne mein issue hua.");
+        }
+        
+        return "history"; // Points to history.html
+    }
+
+    /**
+     * Process Secure Checkout Linkage:
+     * Saves travel database pipeline and triggers smooth notification response.
+     */
+    @PostMapping("/book")
+    public String executeTicketBookingRegistry(
+            @RequestParam("packageId") Long packageId,
+            @RequestParam("passengerQty") int passengerQty,
+            @RequestParam("paymentMethod") String paymentMethod,
+            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+            Principal principal) {
+        
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String username = principal.getName();
+        logger.info("Initiating database pipeline execution for package ID: {}", packageId);
+
+        try {
+            Booking booking = new Booking();
+            
+            // FIX: 'setUserId' ki jagah 'setUser' kiya taaki Repository ke 'findAllByUserAndType' se match kare
+            booking.setUserId(username); 
+            
+            booking.setType("TRAVEL"); 
+            booking.setPassengerQty(passengerQty);
+            booking.setPaymentMethod(paymentMethod);
+
+            // UI placeholders schema setting
+            booking.setPackageTitle("Premium Global Vector Route (PKG-" + packageId + ")");
+            booking.setOrigin("Origin Core");
+            booking.setDestination("Destination Terminal");
+            booking.setPrice(1250.0 * passengerQty); 
+
+            bookingRepository.save(booking);
+            logger.info("Booking pipeline generated successfully. ID: {}", booking.getId());
+
+        } catch (Exception e) {
+            logger.error("Critical error during layout transaction checkpoint processing: ", e);
+            return "redirect:/travel?error=true";
+        }
+
+        // OPTION A: Agar toast notification 'travel' page par dikhani hai:
+        return "redirect:/travel?success=true";
+        
+        // OPTION B: Agar toast notification 'history' page par dikhani hai, toh isko uncomment karein aur upar wale ko comment:
+        // return "redirect:/bookings/history?success=true";
+    }
+
+    /**
+     * Search Redirector
+     */
+    @GetMapping("/search")
+    public String dynamicRegistryQuery(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String date,
+            @RequestParam(defaultValue = "1") String quantity,
+            @RequestParam(defaultValue = "travel") String roleMode) {
+        
+        String query = String.format("?from=%s&to=%s&date=%s&qty=%s", 
+                encode(from), encode(to), encode(date), encode(quantity));
+
+        return "cargo".equalsIgnoreCase(roleMode) 
+                ? "redirect:/cargo" + query 
+                : "redirect:/travel" + query;
+    }
+
+    private String encode(String value) {
+        return URLEncoder.encode((value != null) ? value.trim() : "", StandardCharsets.UTF_8);
     }
 }

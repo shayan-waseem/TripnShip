@@ -1,48 +1,217 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
-<body class="text-slate-100 min-h-screen font-sans flex flex-col">
-<nav th:replace="~{fragments/layout :: user-nav('home')}"></nav>
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Trip & Ship - Home')}"></th:block>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-<main class="flex-1 max-w-5xl mx-auto w-full px-6 py-12">
-    <div class="mb-10">
-        <h1 class="text-3xl md:text-4xl font-black tracking-tight">Welcome back<span th:if="${currentUser != null}" th:text="', ' + ${currentUser.username}">!</span></h1>
-        <p class="text-slate-400 text-sm mt-2">Choose what you want to do — everything is one click away.</p>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0c10;
+        }
+
+        /* Hero Container with Ambient Wallpaper Blending */
+        .hero-section {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(11, 12, 16, 1) 95%), 
+                        url('https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Ultra Premium Frosted Glass Engine */
+        .glass-widget {
+            background: rgba(255, 255, 255, 0.04) !important;
+            backdrop-filter: blur(25px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.07) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(99, 102, 241, 0.6) !important;
+            outline: none;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Destination Card Hover Dynamics */
+        .destination-card {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+        .destination-card:hover {
+            transform: scale(1.04) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col">
+
+<nav th:replace="~{fragments/layout :: user-nav('home')}" class="absolute w-full z-50 bg-transparent"></nav>
+
+<section class="hero-section min-h-[85vh] flex flex-col justify-center items-center pt-24 px-6">
+    <div class="text-center max-w-3xl mb-8">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4 drop-shadow-md">
+            Your Journey Starts Here
+        </h1>
+        <p class="text-slate-200 text-base md:text-lg font-light drop-shadow">
+            Experience seamless travel and cargo shipping across the globe
+        </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        <a href="/travel" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">✈️</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Book Travel</h2>
-            <p class="text-slate-400 text-xs mt-1">Browse holiday packages and reserve trips.</p>
-        </a>
-        <a href="/cargo" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">📦</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Ship Cargo</h2>
-            <p class="text-slate-400 text-xs mt-1">Register domestic or international shipments.</p>
-        </a>
-        <a href="/travel/history" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">📋</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">My Bookings</h2>
-            <p class="text-slate-400 text-xs mt-1">View your travel booking history.</p>
-        </a>
-        <a href="/tracking" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">🛰️</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Track Shipment</h2>
-            <p class="text-slate-400 text-xs mt-1">Live status for your cargo deliveries.</p>
-        </a>
-        <a href="/payment" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">💳</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Payments</h2>
-            <p class="text-slate-400 text-xs mt-1">Complete or review payment transactions.</p>
-        </a>
-        <a href="/wishlist" class="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-500/50 hover:bg-indigo-600/10 transition shadow-lg">
-            <div class="text-2xl mb-3">❤️</div>
-            <h2 class="font-bold text-lg group-hover:text-indigo-300 transition">Wishlist</h2>
-            <p class="text-slate-400 text-xs mt-1">Saved packages for later.</p>
-        </a>
+    <div class="w-full max-w-3xl glass-widget rounded-3xl p-6 md:p-8 animate-fade-in mb-12">
+        <div class="flex space-x-2 p-1 bg-white/5 rounded-xl max-w-xs mb-6 mx-auto md:mx-0">
+            <button type="button" id="tabTravel" onclick="switchMode('travel')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-white/10 text-white shadow transition-all duration-300">
+                ✈️ Book a Ticket
+            </button>
+            <button type="button" id="tabCargo" onclick="switchMode('cargo')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-300">
+                📦 Ship Cargo
+            </button>
+        </div>
+
+        <form id="searchRegistryForm" th:action="@{/travel}" method="GET" class="space-y-4">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1 uppercase tracking-wider">From</label>
+                    <input type="text" name="from" placeholder="📍 Departure city" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400" required>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1 uppercase tracking-wider">To</label>
+                    <input type="text" name="to" placeholder="🏁 Destination city" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1 uppercase tracking-wider">Date</label>
+                    <input type="date" name="date" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white text-left" required>
+                </div>
+                <div>
+                    <label id="variableLabel" class="text-xs font-semibold text-slate-300 block mb-1 uppercase tracking-wider">Passengers</label>
+                    <input id="variableInput" name="qty" type="number" min="1" value="1" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-3.5 rounded-xl text-sm transition-all duration-300 shadow-md flex items-center justify-center space-x-2 mt-2">
+                <span>🔍 Search Registry</span>
+            </button>
+        </form>
     </div>
-</main>
+</section>
+
+<section class="bg-[#0b0c10] py-16 px-6 border-t border-white/5">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-2">Track Your Shipment</h2>
+        <p class="text-slate-400 text-sm mb-8">Enter your cargo registry serial key to fetch real-time global telemetry coordinates</p>
+        
+        <form th:action="@{/tracking}" method="GET" class="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto bg-slate-900/50 p-2 rounded-2xl border border-white/5">
+            <input type="text" name="trackingId" placeholder="Enter tracking number (e.g., OCN-1234567)" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 placeholder-slate-500">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition duration-200 shadow-lg">
+                Track Now
+            </button>
+        </form>
+    </div>
+</section>
+
+<section class="bg-[#0d0f14] py-16 px-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-2">Featured Destinations</h2>
+            <p class="text-slate-400 text-sm">Explore our most curated global travel hubs</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <a th:href="@{/travel(from='Anywhere', to='Maldives', qty='1')}" class="destination-card relative h-80 rounded-2xl overflow-hidden cursor-pointer group block">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
+                    <h3 class="text-lg font-bold text-white">Maldives</h3>
+                    <p class="text-slate-300 text-xs font-light">Tropical Paradise</p>
+                    <span class="text-emerald-400 text-xs font-bold mt-2">From $500</span>
+                </div>
+            </a>
+            
+            <a th:href="@{/travel(from='Anywhere', to='Dubai', qty='1')}" class="destination-card relative h-80 rounded-2xl overflow-hidden cursor-pointer group block">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=500&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
+                    <h3 class="text-lg font-bold text-white">Dubai</h3>
+                    <p class="text-slate-300 text-xs font-light">Modern Metropolis</p>
+                    <span class="text-emerald-400 text-xs font-bold mt-2">From $749</span>
+                </div>
+            </a>
+            
+            <a th:href="@{/travel(from='Anywhere', to='Swiss Alps', qty='1')}" class="destination-card relative h-80 rounded-2xl overflow-hidden cursor-pointer group block">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
+                    <h3 class="text-lg font-bold text-white">Swiss Alps</h3>
+                    <p class="text-slate-300 text-xs font-light">Mountain Adventure</p>
+                    <span class="text-emerald-400 text-xs font-bold mt-2">From $899</span>
+                </div>
+            </a>
+            
+            <a th:href="@{/travel(from='Anywhere', to='Paris', qty='1')}" class="destination-card relative h-80 rounded-2xl overflow-hidden cursor-pointer group block">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=500&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-5 flex flex-col justify-end">
+                    <h3 class="text-lg font-bold text-white">Paris</h3>
+                    <p class="text-slate-300 text-xs font-light">City of Lights</p>
+                    <span class="text-emerald-400 text-xs font-bold mt-2">From $650</span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="text-center mt-10">
+            <a th:href="@{/travel}" class="inline-block bg-white/5 hover:bg-white/10 text-white font-medium text-xs px-6 py-3 rounded-xl border border-white/10 transition">
+                View All Destinations
+            </a>
+        </div>
+    </div>
+</section>
+
 <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<script>
+    /**
+     * Runtime UI Mode Switcher & Pipeline Mutator
+     */
+    function switchMode(type) {
+        const tBtn = document.getElementById('tabTravel');
+        const cBtn = document.getElementById('tabCargo');
+        const label = document.getElementById('variableLabel');
+        const input = document.getElementById('variableInput');
+        const form = document.getElementById('searchRegistryForm');
+
+        if (type === 'travel') {
+            tBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-white/10 text-white shadow transition-all duration-300";
+            cBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-300";
+            label.innerText = "Passengers";
+            input.type = "number";
+            input.name = "qty";
+            input.value = "1";
+            input.placeholder = "";
+            
+            // Re-route target form pipeline structure safely to Travel Registry Endpoint context
+            form.action = "[[@{/travel}]]";
+        } else {
+            cBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-white/10 text-white shadow transition-all duration-300";
+            tBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-300";
+            label.innerText = "Weight Load (KG)";
+            input.type = "text";
+            input.name = "qty";
+            input.value = "";
+            input.placeholder = "e.g., 250";
+            
+            // Re-route target form pipeline structure safely to Cargo Registry Endpoint context
+            form.action = "[[@{/cargo}]]";
+        }
+    }
+</script>
 </body>
 </html>

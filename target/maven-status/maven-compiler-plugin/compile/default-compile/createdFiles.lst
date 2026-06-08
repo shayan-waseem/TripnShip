@@ -50,7 +50,6 @@ com\tripandship\service\PaymentService.class
 com\tripandship\patterns\observer\AdminPanel.class
 com\tripandship\repository\ReviewRepository.class
 com\tripandship\controller\AuthController.class
-com\tripandship\controller\PaymentController.class
 com\tripandship\service\TrackingService.class
 com\tripandship\controller\BookingController.class
 com\tripandship\service\BookingService.class

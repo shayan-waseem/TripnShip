@@ -6,7 +6,10 @@
     "origin": "New York",
     "destination": "Maldives",
     "price": 1200.0,
-    "availableSlots": 15
+    "availableSlots": 15,
+    "airlineName": "SkyWings Airlines",
+    "transitStops": "Non-stop",
+    "cabinClass": "Business Class"
   },
   {
     "id": "PKG-002",
@@ -15,6 +18,9 @@
     "origin": "Chicago",
     "destination": "Swiss Alps",
     "price": 1500.0,
-    "availableSlots": 8
+    "availableSlots": 8,
+    "airlineName": "Prime Airways",
+    "transitStops": "1 Stop",
+    "cabinClass": "Economy Class"
   }
 ]
